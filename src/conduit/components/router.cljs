@@ -20,10 +20,11 @@
 
 (def router-mixin
   {:will-mount
-   (fn [{[r routes] :rum/args
+   (fn [{[r routes _ on-navigate] :rum/args
          :as state}]
      (->> routes
-          (start! #(scrum/dispatch! r :router :push (:handler %)))
+          (start! #(do (scrum/dispatch! r :router :push %)
+                       (on-navigate r %)))
           (assoc state :conduit/history)))
    :will-unmount
    (fn [{history :conduit/history
@@ -34,8 +35,8 @@
 (rum/defc Router <
   rum/reactive
   router-mixin
-  [r _ layouts]
-  (let [route (rum/react (scrum/subscription r [:router]))
+  [r _ layouts _]
+  (let [{:keys [route params]} (rum/react (scrum/subscription r [:router]))
         layout (get layouts route)]
     (when layout
-      (layout r route))))
+      (layout r route params))))

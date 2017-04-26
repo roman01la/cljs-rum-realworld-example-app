@@ -1,7 +1,7 @@
 (ns conduit.controllers.router)
 
 (def initial-state
-  nil)
+  {})
 
 (defmulti control (fn [action] action))
 
@@ -11,5 +11,6 @@
 (defmethod control :init []
   initial-state)
 
-(defmethod control :push [_ [route]]
-  route)
+(defmethod control :push [_ [{:keys [handler route-params]}]]
+  {:route handler
+   :params route-params})

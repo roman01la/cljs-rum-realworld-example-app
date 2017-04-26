@@ -15,11 +15,14 @@
       js/JSON.parse
       (js->clj :keywordize-keys true)))
 
-(defn fetch [endpoint]
-  (-> (get endpoints endpoint)
-      ->uri
-      xhr/get
-      (p/then parse-body)))
+(defn fetch
+  ([endpoint]
+   (fetch endpoint nil))
+  ([endpoint params]
+   (-> (get endpoints endpoint)
+       ->uri
+       (xhr/get {:query-params params})
+       (p/then parse-body))))
 
 (defn mixin [controller->endpoint]
   {:did-mount
