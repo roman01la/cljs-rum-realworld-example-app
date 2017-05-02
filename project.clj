@@ -9,7 +9,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.521"]
                  [rum "0.10.8"]
-                 [org.roman01la/scrum "2.0.0-SNAPSHOT"]
+                 [org.roman01la/scrum "2.1.0-SNAPSHOT"]
                  [bidi "2.0.17"]
                  [funcool/promesa "1.8.1"]
                  [funcool/httpurr "0.6.2"]]

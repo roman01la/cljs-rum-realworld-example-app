@@ -1,23 +1,19 @@
-(ns conduit.controllers.tags
-  (:require [scrum.core :as scrum]
-            [conduit.api :as api]
-            [promesa.core :as p]))
+(ns conduit.controllers.tags)
 
 (def initial-state
   [])
 
-(defmulti control (fn [action] action))
+(defmulti control (fn [event] event))
 
 (defmethod control :default [_ _ state]
-  state)
+  {:state state})
 
 (defmethod control :init []
-  initial-state)
+  {:state initial-state})
 
-(defmethod control :load [_ [r] state]
-  (-> (api/fetch :tags)
-      (p/then #(scrum/dispatch! r :tags :load-ready %)))
-  state)
+(defmethod control :load [_ _ state]
+  {:http {:endpoint :tags
+          :on-load :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [tags]}]]
-  tags)
+  {:state tags})

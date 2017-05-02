@@ -3,14 +3,15 @@
 (def initial-state
   {})
 
-(defmulti control (fn [action] action))
+(defmulti control (fn [event] event))
 
 (defmethod control :default [_ _ state]
-  state)
+  {:state state})
 
 (defmethod control :init []
-  initial-state)
+  {:state initial-state})
 
 (defmethod control :push [_ [{:keys [handler route-params]}]]
-  {:route handler
-   :params route-params})
+  {:state
+   {:route handler
+    :params route-params}})

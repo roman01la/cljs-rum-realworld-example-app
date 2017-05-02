@@ -1,28 +1,25 @@
-(ns conduit.controllers.articles
-  (:require [scrum.core :as scrum]
-            [conduit.api :as api]
-            [promesa.core :as p]))
+(ns conduit.controllers.articles)
 
 (def initial-state
   {:articles []
    :page 0
    :pages-count 0})
 
-(defmulti control (fn [action] action))
+(defmulti control (fn [event] event))
 
 (defmethod control :default [_ _ state]
-  state)
+  {:state state})
 
 (defmethod control :init []
-  initial-state)
+  {:state initial-state})
 
-(defmethod control :load [_ [r] state]
-  (-> (api/fetch :articles)
-      (p/then #(scrum/dispatch! r :articles :load-ready %)))
-  state)
+(defmethod control :load [_ _ state]
+  {:http {:endpoint :articles
+          :on-load :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [articles articlesCount]}] state]
-  (-> state
-      (assoc :articles articles)
-      (assoc :page 1)
-      (assoc :pages-count (-> articlesCount (/ 10) Math/round))))
+  {:state
+   (-> state
+       (assoc :articles articles)
+       (assoc :page 1)
+       (assoc :pages-count (-> articlesCount (/ 10) Math/round)))})

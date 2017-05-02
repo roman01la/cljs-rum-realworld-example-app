@@ -3,6 +3,7 @@
             [scrum.core :as scrum]
             [goog.dom :as dom]
             [conduit.controllers.router :as router]
+            [conduit.effects :as effects]
             [conduit.controllers.articles :as articles]
             [conduit.controllers.tags :as tags]
             [conduit.controllers.tag-articles :as tag-articles]
@@ -13,9 +14,6 @@
   ["/" [["" :home]
         [["tag/" :id] :home]]])
 
-(def layouts
-  {:home Home})
-
 ;; create Reconciler instance
 (defonce reconciler
   (scrum/reconciler
@@ -24,7 +22,8 @@
      {:router router/control
       :articles articles/control
       :tag-articles tag-articles/control
-      :tags tags/control}}))
+      :tags tags/control}
+     :effect-handlers {:http effects/http}}))
 
 ;; initialize controllers
 (defonce init-ctrl (scrum/broadcast-sync! reconciler :init))
@@ -34,16 +33,15 @@
     (cond
       (and (= handler :home) id)
       (do
-        (scrum/dispatch! r :tag-articles :load r id)
-        (scrum/dispatch! r :tags :load r))
+        (scrum/dispatch! r :tag-articles :load id)
+        (scrum/dispatch! r :tags :load))
 
       (= handler :home)
       (do
         (scrum/dispatch! r :tag-articles :reset)
-        (scrum/dispatch! r :articles :load r)
-        (scrum/dispatch! r :tags :load r)))))
+        (scrum/dispatch! r :articles :load)
+        (scrum/dispatch! r :tags :load)))))
 
-
-(rum/mount (Router reconciler routes layouts on-navigate)
+(rum/mount (Router reconciler routes {:home Home} on-navigate)
            (dom/getElement "app"))
 

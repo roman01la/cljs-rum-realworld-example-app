@@ -23,12 +23,3 @@
        ->uri
        (xhr/get {:query-params params})
        (p/then parse-body))))
-
-(defn mixin [controller->endpoint]
-  {:did-mount
-   (fn [{[r] :rum/args
-         :as state}]
-     (doseq [[controller endpoint] controller->endpoint]
-       (->> (fetch endpoint)
-            (scrum/dispatch! r controller :load r)))
-     state)})
