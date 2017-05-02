@@ -2,7 +2,6 @@
   (:require [rum.core :as rum]
             [scrum.core :as scrum]
             [goog.dom :as dom]
-            [conduit.controllers.router :as router]
             [conduit.effects :as effects]
             [conduit.controllers.articles :as articles]
             [conduit.controllers.tags :as tags]
@@ -19,8 +18,7 @@
   (scrum/reconciler
     {:state (atom {})
      :controllers
-     {:router router/control
-      :articles articles/control
+     {:articles articles/control
       :tag-articles tag-articles/control
       :tags tags/control}
      :effect-handlers {:http effects/http}}))
@@ -42,6 +40,6 @@
         (scrum/dispatch! r :articles :load)
         (scrum/dispatch! r :tags :load)))))
 
-(rum/mount (Router reconciler routes {:home Home} on-navigate)
+(rum/mount (Router reconciler routes {:home Home})
            (dom/getElement "app"))
 

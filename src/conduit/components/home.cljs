@@ -1,6 +1,7 @@
 (ns conduit.components.home
   (:require [rum.core :as rum]
             [scrum.core :as scrum]
+            [conduit.components.router :as router]
             [conduit.components.grid :as grid]
             [conduit.components.base :as base]
             [conduit.components.header :refer [Header]]
@@ -96,7 +97,13 @@
    (Page r data)])
 
 
-(rum/defc Home < rum/reactive [r route {:keys [id]}]
+(rum/defc Home <
+  rum/static
+  rum/reactive
+  (router/mixin {:tag-articles :reset
+                 :articles :load
+                 :tags :load})
+  [r route {:keys [id]}]
   (let [articles (rum/react (scrum/subscription r [:articles]))
         tag-articles (rum/react (scrum/subscription r [:tag-articles]))
         tags (rum/react (scrum/subscription r [:tags]))

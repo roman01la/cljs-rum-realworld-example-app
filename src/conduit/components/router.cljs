@@ -18,13 +18,26 @@
 (defn stop! [handler]
   (events/unlisten js/window "hashchange" handler))
 
-(def router-mixin
-  {:will-mount
-   (fn [{[r routes _ on-navigate] :rum/args
+
+(defn- mixin-handler [events n]
+  (fn [{[r _ params] :rum/args
+        :as state}]
+    (doseq [[ctrl event] events]
+      (scrum/dispatch! r ctrl event params))
+    state))
+
+(defn mixin [events]
+  {:did-mount (mixin-handler events 1)
+   :did-update (mixin-handler events 2)})
+
+
+(def ^:private router-mixin
+  {:did-mount
+   (fn [{[r routes _] :rum/args
+         route ::route
          :as state}]
      (->> routes
-          (start! #(do (scrum/dispatch! r :router :push %)
-                       (on-navigate r %)))
+          (start! #(reset! route %))
           (assoc state :conduit/history)))
    :will-unmount
    (fn [{history :conduit/history
@@ -32,11 +45,12 @@
      (stop! history)
      (dissoc state :conduit/history))})
 
-(rum/defc Router <
+(rum/defcs Router <
   rum/reactive
   router-mixin
-  [r _ layouts _]
-  (let [{:keys [route params]} (rum/react (scrum/subscription r [:router]))
-        layout (get layouts route)]
+  (rum/local {} ::route)
+  [{route ::route} r _ layouts]
+  (let [{:keys [handler route-params]} (rum/react route)
+        layout (get layouts handler)]
     (when layout
-      (layout r route params))))
+      (layout r handler route-params))))
