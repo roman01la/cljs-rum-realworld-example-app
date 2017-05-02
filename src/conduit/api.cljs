@@ -3,14 +3,25 @@
             [httpurr.client.xhr :as xhr]
             [promesa.core :as p]))
 
-(defn ->uri [path]
+(defmulti ->endpoint (fn [id] id))
+
+(defmethod ->endpoint :articles [_ _]
+  "articles")
+
+(defmethod ->endpoint :tags [_ _]
+  "tags")
+
+(defmethod ->endpoint :article [_ slug]
+  (str "articles/" slug))
+
+(defmethod ->endpoint :comments [_ slug]
+  (str "articles/" slug "/comments"))
+
+
+(defn- ->uri [path]
   (str "https://conduit.productionready.io/api/" path))
 
-(def endpoints
-  {:articles "articles"
-   :tags "tags"})
-
-(defn parse-body [res]
+(defn- parse-body [res]
   (-> (:body res)
       js/JSON.parse
       (js->clj :keywordize-keys true)))
@@ -19,7 +30,9 @@
   ([endpoint]
    (fetch endpoint nil))
   ([endpoint params]
-   (-> (get endpoints endpoint)
+   (fetch endpoint params nil))
+  ([endpoint params slug]
+   (-> (->endpoint endpoint slug)
        ->uri
        (xhr/get {:query-params params})
        (p/then parse-body))))

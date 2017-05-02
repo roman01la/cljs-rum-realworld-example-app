@@ -5,7 +5,7 @@
             [goog.events :as events]
             [clojure.string :as cstr]))
 
-(defn start! [on-set-page routes]
+(defn- start! [on-set-page routes]
   (letfn [(handle-route []
             (let [uri (cstr/replace js/location.hash "#" "")]
               (->> (if-not (empty? uri) uri "/")
@@ -15,21 +15,24 @@
     (handle-route)
     handle-route))
 
-(defn stop! [handler]
+(defn- stop! [handler]
   (events/unlisten js/window "hashchange" handler))
 
-
-(defn- mixin-handler [events n]
-  (fn [{[r _ params] :rum/args
-        :as state}]
-    (doseq [[ctrl event] events]
-      (scrum/dispatch! r ctrl event params))
-    state))
-
 (defn mixin [events]
-  {:did-mount (mixin-handler events 1)
-   :did-update (mixin-handler events 2)})
-
+  {:did-mount
+   (fn [{[r _ params] :rum/args
+         :as state}]
+     (doseq [[ctrl event] events]
+       (scrum/dispatch! r ctrl event params))
+     state)
+   :did-remount
+   (fn [old
+        {[r _ params] :rum/args
+         :as state}]
+     (when (not= (:rum/args old) (:rum/args state))
+       (doseq [[ctrl event] events]
+         (scrum/dispatch! r ctrl event params)))
+     state)})
 
 (def ^:private router-mixin
   {:did-mount
@@ -38,12 +41,12 @@
          :as state}]
      (->> routes
           (start! #(reset! route %))
-          (assoc state :conduit/history)))
+          (assoc state ::history)))
    :will-unmount
-   (fn [{history :conduit/history
+   (fn [{history ::history
          :as state}]
      (stop! history)
-     (dissoc state :conduit/history))})
+     (dissoc state ::history))})
 
 (rum/defcs Router <
   rum/reactive

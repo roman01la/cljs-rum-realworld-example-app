@@ -1,2 +1,12 @@
-/* some style */
-
+.loader {
+  text-align: center;
+  padding: 16px 0;
+}
+.tags-list {
+  margin: 0;
+  padding: 0;
+}
+.article-footer {
+  display: flex;
+  justify-content: space-between;
+}

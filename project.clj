@@ -12,7 +12,8 @@
                  [org.roman01la/scrum "2.1.0-SNAPSHOT"]
                  [bidi "2.0.17"]
                  [funcool/promesa "1.8.1"]
-                 [funcool/httpurr "0.6.2"]]
+                 [funcool/httpurr "0.6.2"]
+                 [markdown-clj "0.9.99"]]
 
   :plugins [[lein-figwheel "0.5.10"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]

@@ -4,5 +4,5 @@
 (rum/defc Row [& children]
   (apply vector :div.row children))
 
-(rum/defc Column [size & children]
-  (apply vector :div {:class (str "col-md-" size)} children))
+(rum/defc Column [class & children]
+  (apply vector :div {:class class} children))

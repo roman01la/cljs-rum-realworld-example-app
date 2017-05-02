@@ -6,12 +6,16 @@
             [conduit.controllers.articles :as articles]
             [conduit.controllers.tags :as tags]
             [conduit.controllers.tag-articles :as tag-articles]
+            [conduit.controllers.article :as article]
+            [conduit.controllers.comments :as comments]
             [conduit.components.router :refer [Router]]
-            [conduit.components.home :refer [Home]]))
+            [conduit.components.home :as home]
+            [conduit.components.article :refer [Article]]))
 
 (def routes
   ["/" [["" :home]
-        [["tag/" :id] :home]]])
+        [["tag/" :id] :tag]
+        [["article/" :id] :article]]])
 
 ;; create Reconciler instance
 (defonce reconciler
@@ -20,26 +24,16 @@
      :controllers
      {:articles articles/control
       :tag-articles tag-articles/control
-      :tags tags/control}
+      :tags tags/control
+      :article article/control
+      :comments comments/control}
      :effect-handlers {:http effects/http}}))
 
 ;; initialize controllers
 (defonce init-ctrl (scrum/broadcast-sync! reconciler :init))
 
-(defn on-navigate [r {:keys [handler route-params]}]
-  (let [{:keys [id]} route-params]
-    (cond
-      (and (= handler :home) id)
-      (do
-        (scrum/dispatch! r :tag-articles :load id)
-        (scrum/dispatch! r :tags :load))
-
-      (= handler :home)
-      (do
-        (scrum/dispatch! r :tag-articles :reset)
-        (scrum/dispatch! r :articles :load)
-        (scrum/dispatch! r :tags :load)))))
-
-(rum/mount (Router reconciler routes {:home Home})
+(rum/mount (Router reconciler routes {:home home/Home
+                                      :tag home/HomeTag
+                                      :article Article})
            (dom/getElement "app"))
 
