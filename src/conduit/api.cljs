@@ -1,5 +1,5 @@
 (ns conduit.api
-  (:require [scrum.core :as scrum]
+  (:require [citrus.core :as citrus]
             [httpurr.client.xhr :as xhr]
             [promesa.core :as p]))
 

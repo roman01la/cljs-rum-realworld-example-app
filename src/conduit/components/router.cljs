@@ -1,6 +1,6 @@
 (ns conduit.components.router
   (:require [rum.core :as rum]
-            [scrum.core :as scrum]
+            [citrus.core :as citrus]
             [bidi.bidi :as b]
             [goog.events :as events]
             [clojure.string :as cstr]))
@@ -23,7 +23,7 @@
    (fn [{[r _ params] :rum/args
          :as state}]
      (doseq [[ctrl event] events]
-       (scrum/dispatch! r ctrl event params))
+       (citrus/dispatch! r ctrl event params))
      state)
    :did-remount
    (fn [old
@@ -31,7 +31,7 @@
          :as state}]
      (when (not= (:rum/args old) (:rum/args state))
        (doseq [[ctrl event] events]
-         (scrum/dispatch! r ctrl event params)))
+         (citrus/dispatch! r ctrl event params)))
      state)})
 
 (def ^:private router-mixin

@@ -1,6 +1,6 @@
 (ns conduit.core
   (:require [rum.core :as rum]
-            [scrum.core :as scrum]
+            [citrus.core :as citrus]
             [goog.dom :as dom]
             [conduit.effects :as effects]
             [conduit.controllers.articles :as articles]
@@ -19,7 +19,7 @@
 
 ;; create Reconciler instance
 (defonce reconciler
-  (scrum/reconciler
+  (citrus/reconciler
     {:state (atom {})
      :controllers
      {:articles articles/control
@@ -30,7 +30,7 @@
      :effect-handlers {:http effects/http}}))
 
 ;; initialize controllers
-(defonce init-ctrl (scrum/broadcast-sync! reconciler :init))
+(defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
 
 (rum/mount (Router reconciler routes {:home home/Home
                                       :tag home/HomeTag
