@@ -12,3 +12,4 @@ pom.xml
 .repl
 .nrepl-port
 .idea
+conduit.iml
