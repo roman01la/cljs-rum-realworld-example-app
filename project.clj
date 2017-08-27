@@ -35,6 +35,8 @@
                 :compiler {:output-to "resources/public/js/compiled/conduit.js"
                            :main conduit.core
                            :optimizations :advanced
+                           :parallel-build true
+                           :closure-defines {"goog.DEBUG" false}
                            :pretty-print false}}]}
 
   :figwheel {:css-dirs ["resources/public/css"]
