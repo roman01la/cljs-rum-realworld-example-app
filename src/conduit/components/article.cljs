@@ -1,6 +1,6 @@
 (ns conduit.components.article
   (:require [rum.core :as rum]
-            [scrum.core :as scrum]
+            [citrus.core :as citrus]
             [markdown.core :as md]
             [conduit.components.base :as base]
             [conduit.components.grid :as grid]
@@ -66,8 +66,8 @@
     {:article :load
      :comments :load})
   [r route params]
-  (let [article (rum/react (scrum/subscription r [:article]))
-        comments (rum/react (scrum/subscription r [:comments]))]
+  (let [article (rum/react (citrus/subscription r [:article]))
+        comments (rum/react (citrus/subscription r [:comments]))]
     [:div
      (Header r route)
      [:div.article-page

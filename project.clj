@@ -7,16 +7,16 @@
   :min-lein-version "2.7.1"
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.521"]
+                 [org.clojure/clojurescript "1.9.908"]
                  [rum "0.10.8"]
-                 [org.roman01la/scrum "2.1.0-SNAPSHOT"]
-                 [bidi "2.0.17"]
-                 [funcool/promesa "1.8.1"]
-                 [funcool/httpurr "0.6.2"]
-                 [markdown-clj "0.9.99"]]
+                 [org.roman01la/citrus "3.0.0"]
+                 [bidi "2.1.2"]
+                 [funcool/promesa "1.9.0"]
+                 [funcool/httpurr "1.0.0"]
+                 [markdown-clj "1.0.1"]]
 
-  :plugins [[lein-figwheel "0.5.10"]
-            [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
+  :plugins [[lein-figwheel "0.5.13"]
+            [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
 
   :source-paths ["src"]
 
@@ -42,12 +42,13 @@
   :figwheel {:css-dirs ["resources/public/css"]
              :ring-handler server/handler}
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.2"]
-                                  [figwheel-sidecar "0.5.10"]
+  :profiles {:dev {:dependencies [[binaryage/devtools "0.9.4"]
+                                  [figwheel-sidecar "0.5.13"]
                                   [com.cemerick/piggieback "0.2.1"]
                                   [ring "1.5.1"]
                                   [ring/ring-defaults "0.2.1"]
                                   [compojure "1.5.0"]]
+
                    :source-paths ["src" "dev"]
                    ;; for CIDER
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]

@@ -1,6 +1,6 @@
 (ns conduit.components.home
   (:require [rum.core :as rum]
-            [scrum.core :as scrum]
+            [citrus.core :as citrus]
             [conduit.components.router :as router]
             [conduit.components.grid :as grid]
             [conduit.components.base :as base]
@@ -133,8 +133,8 @@
      :articles :load
      :tags :load})
   [r route params]
-  (let [articles (rum/react (scrum/subscription r [:articles]))
-        tags (rum/react (scrum/subscription r [:tags]))]
+  (let [articles (rum/react (citrus/subscription r [:articles]))
+        tags (rum/react (citrus/subscription r [:tags]))]
     (-Home r articles tags nil)))
 
 (rum/defc HomeTag <
@@ -143,6 +143,6 @@
     {:tag-articles :load
      :tags :load})
   [r route {:keys [id]}]
-  (let [tag-articles (rum/react (scrum/subscription r [:tag-articles]))
-        tags (rum/react (scrum/subscription r [:tags]))]
+  (let [tag-articles (rum/react (citrus/subscription r [:tag-articles]))
+        tags (rum/react (citrus/subscription r [:tags]))]
     (-Home r tag-articles tags id)))

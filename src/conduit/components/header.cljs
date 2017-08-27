@@ -23,6 +23,6 @@
 (rum/defc Header [r route]
   [:nav.navbar.navbar-light
    [:div.container
-    [:a.navbar-brand {:href "index.html"} "conduit"]
+    [:a.navbar-brand {:href "#/"} "conduit"]
     [:ul.nav.navbar-nav.pull-xs-right
      (map #(rum/with-key (NavItem route %) (:label %)) nav-items)]]])
