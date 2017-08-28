@@ -1,11 +1,8 @@
-(ns conduit.components.router
+(ns conduit.mixins
   (:require [rum.core :as rum]
-            [citrus.core :as citrus]
-            [bidi.bidi :as b]
-            [goog.events :as events]
-            [clojure.string :as cstr]))
+            [citrus.core :as citrus]))
 
-(defn mixin [events]
+(defn dispatch-on-mount [events]
   {:did-mount
    (fn [{[r _ params] :rum/args
          :as state}]
