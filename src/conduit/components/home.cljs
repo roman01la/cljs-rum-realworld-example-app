@@ -1,7 +1,7 @@
 (ns conduit.components.home
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
-            [conduit.components.router :as router]
+            [conduit.mixins :as mixins]
             [conduit.components.grid :as grid]
             [conduit.components.base :as base]
             [conduit.components.header :refer [Header]]
@@ -128,7 +128,7 @@
 
 (rum/defc Home <
   rum/reactive
-  (router/mixin
+  (mixins/dispatch-on-mount
     {:tag-articles :reset
      :articles :load
      :tags :load})
@@ -139,7 +139,7 @@
 
 (rum/defc HomeTag <
   rum/reactive
-  (router/mixin
+  (mixins/dispatch-on-mount
     {:tag-articles :load
      :tags :load})
   [r route {:keys [id]}]

@@ -4,7 +4,7 @@
             [markdown.core :as md]
             [conduit.components.base :as base]
             [conduit.components.grid :as grid]
-            [conduit.components.router :as router]
+            [conduit.mixins :as mixins]
             [conduit.components.header :refer [Header]]
             [conduit.components.comment :as comment]))
 
@@ -62,7 +62,7 @@
 
 (rum/defc Article <
   rum/reactive
-  (router/mixin
+  (mixins/dispatch-on-mount
     {:article :load
      :comments :load})
   [r route params]
