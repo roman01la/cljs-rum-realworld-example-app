@@ -10,4 +10,5 @@
 - Learn [Rum](https://github.com/tonsky/rum/) and [Citrus](https://github.com/roman01la/citrus) libraries
 - Choose a task from what's left to do
 - Create an issue with description of the task so everyone knows what are you working on
-- Send PRs with small commits for a review
+- Follow the code style as much as possible, we want the codebase to be consistent
+- Send PRs with small commits for a review, it's easier to understand small changes
