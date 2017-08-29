@@ -14,6 +14,5 @@
        [:h1.text-xs-center "Sign in"]
        [:p.text-xs-center
         [:a {:href "#/register"} "Need an account?"]]
-       (LoginForm r route params)
-       ]]]]
+       (LoginForm r route params)]]]]
    (Footer)])
