@@ -3,7 +3,7 @@
 (defmulti control (fn [event] event))
 
 (defmethod control :init [_ [route]]
-  {:state route })
+  {:state route})
 
 (defmethod control :push [_ [route]]
   {:state route})
