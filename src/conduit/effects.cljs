@@ -3,15 +3,8 @@
             [conduit.api :as api]
             [promesa.core :as p]))
 
-(defmulti http (fn [_ _ params] (:method params)))
-
-(defmethod http :post [r c {:keys [endpoint params slug on-load on-error]}]
-  (-> (api/post endpoint params slug)
-      (p/then #(citrus/dispatch! r c on-load %))
-      (p/catch #(citrus/dispatch! r c on-error %))))
-
-(defmethod http :default [r c {:keys [endpoint params slug on-load on-error headers]}]
-  (-> (api/fetch endpoint params slug headers)
+(defn http [r c {:keys [endpoint params slug on-load on-error method type headers]}]
+  (-> (api/fetch endpoint params slug method type headers)
       (p/then #(citrus/dispatch! r c on-load %))
       (p/catch #(citrus/dispatch! r c on-error %))))
 

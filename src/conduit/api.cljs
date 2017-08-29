@@ -44,19 +44,15 @@
    (fetch endpoint params nil))
   ([endpoint params slug]
    (fetch endpoint params slug nil))
-  ([endpoint params slug headers]
-   (-> (->endpoint endpoint slug)
-       ->uri
-       (->xhr xhr/get {:query-params params
-                       :headers headers}))))
-
-(defn post
-  ([endpoint]
-   (fetch endpoint nil))
-  ([endpoint params]
-   (fetch endpoint params nil))
-  ([endpoint params slug]
-   (-> (->endpoint endpoint slug)
-       ->uri
-       (->xhr xhr/post {:body (.stringify js/JSON (clj->js params))
-                        :headers {"Content-Type" "application/json"}}))))
+  ([endpoint params slug method]
+   (fetch endpoint params slug method nil))
+  ([endpoint params slug method type]
+   (fetch endpoint params slug method type nil))
+  ([endpoint params slug method type headers]
+   (let [xhr-fn (if (= method :post) xhr/post xhr/get)
+         xhr-params {:query-params (when (not (= method :post)) params)
+                     :body (when (= method :post) (.stringify js/JSON (clj->js params)))
+                     :headers (if (= type :json) (merge headers {"Content-Type" "application/json"}) headers)}]
+     (-> (->endpoint endpoint slug)
+         ->uri
+         (->xhr xhr-fn xhr-params)))))
