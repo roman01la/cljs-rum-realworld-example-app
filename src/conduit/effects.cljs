@@ -4,7 +4,12 @@
             [promesa.core :as p]))
 
 (defn http [r c {:keys [endpoint params slug on-load on-error method type headers]}]
-  (-> (api/fetch endpoint params slug method type headers)
+  (-> (api/fetch {:endpoint endpoint
+                  :params params
+                  :slug slug
+                  :method method
+                  :type type
+                  :headers headers})
       (p/then #(citrus/dispatch! r c on-load %))
       (p/catch #(citrus/dispatch! r c on-error %))))
 
