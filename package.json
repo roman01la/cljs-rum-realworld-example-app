@@ -1,0 +1,17 @@
+{
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^4.0.4",
+    "parlinter": "^1.2.0"
+  },
+  "scripts": {
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{clj,cljs,cljc,edn}": [
+      "parlinter --trim --write \"**/*.{clj,cljs,cljc,edn}\"",
+      "git add"
+    ]
+  }
+}
