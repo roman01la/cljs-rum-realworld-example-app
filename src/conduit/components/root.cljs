@@ -2,7 +2,8 @@
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
             [conduit.components.home :as home]
-            [conduit.components.article :refer [Article]]))
+            [conduit.components.article :refer [Article]]
+            [conduit.components.login :refer [Login]]))
 
 (rum/defc Root < rum/reactive [r]
   (let [{route :handler params :route-params}
@@ -11,5 +12,5 @@
       :home (home/Home r route params)
       :tag (home/HomeTag r route params)
       :article (Article r route params)
+      :login (Login r route params)
       [:div "404"])))
-
