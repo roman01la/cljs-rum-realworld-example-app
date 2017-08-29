@@ -3,6 +3,15 @@
 
 > ### ClojureScript + Rum codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld-example-apps) spec and API.
 
+## Development
+
+- Install Java
+- Install Leiningen `brew install leiningen`
+- Install rlwrap `brew install rlwrap`
+- Install NPM dependencies `npm i`
+- Run development server `rlwrap lein figwheel dev`
+- Build for production `lein cljsbuild once min`
+
 ## Want to contribute?
 
 - Explore [RealWorld](https://github.com/gothinkster/realworld) project repo
