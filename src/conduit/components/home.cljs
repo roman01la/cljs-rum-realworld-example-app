@@ -3,9 +3,7 @@
             [citrus.core :as citrus]
             [conduit.mixins :as mixins]
             [conduit.components.grid :as grid]
-            [conduit.components.base :as base]
-            [conduit.components.header :refer [Header]]
-            [conduit.components.footer :refer [Footer]]))
+            [conduit.components.base :as base]))
 
 (rum/defc Banner []
   [:div.banner
@@ -85,7 +83,7 @@
   [:div.container.page
    (grid/Row
      (grid/Column "col-md-9"
-       (FeedToggle tabs)
+       (FeedToggle (filter #(not (nil? %)) tabs))
        (if (and loading? (nil? (seq articles)))
          [:div.loader "Loading articles..."]
          (->> articles
@@ -103,28 +101,26 @@
 
 
 (rum/defc -Home < rum/static
-  [r {:keys [articles loading? pages-count page]} tags id]
-  [:div
-   (Header r :home)
-   (Layout r {:articles articles
-              :loading? loading?
-              :pagination
-              {:pages-count pages-count
-               :page page
-               :slug id}
+  [r {:keys [articles loading? pages-count page]} tags id current-user]
+  (Layout r {:articles articles
+             :loading? loading?
+             :pagination
+             {:pages-count pages-count
+              :page page
+              :slug id}
               :tags tags
               :tabs
-              [{:label "Your Feed"
-                :active? false
-                :link "#/"}
-               {:label "Global Feed"
-                :active? (nil? id)
-                :link "#/"}
-               (when id
-                 {:label (str " " id)
-                  :icon "ion-pound"
-                  :active? true})]})
-   (Footer)])
+             [(when current-user
+                {:label "Your Feed"
+                 :active? false
+                 :link "#/"})
+              {:label "Global Feed"
+               :active? (nil? id)
+               :link "#/"}
+              (when id
+                {:label (str " " id)
+                 :icon "ion-pound"
+                 :active? true})]}))
 
 (rum/defc Home <
   rum/reactive
@@ -134,8 +130,9 @@
      :tags :load})
   [r route params]
   (let [articles (rum/react (citrus/subscription r [:articles]))
-        tags (rum/react (citrus/subscription r [:tags]))]
-    (-Home r articles tags nil)))
+        tags (rum/react (citrus/subscription r [:tags]))
+        current-user (rum/react (citrus/subscription r [:user :current-user]))]
+    (-Home r articles tags nil current-user)))
 
 (rum/defc HomeTag <
   rum/reactive
@@ -144,5 +141,6 @@
      :tags :load})
   [r route {:keys [id]}]
   (let [tag-articles (rum/react (citrus/subscription r [:tag-articles]))
-        tags (rum/react (citrus/subscription r [:tags]))]
-    (-Home r tag-articles tags id)))
+        tags (rum/react (citrus/subscription r [:tags]))
+        current-user (rum/react (citrus/subscription r [:user :current-user]))]
+    (-Home r tag-articles tags id current-user)))
