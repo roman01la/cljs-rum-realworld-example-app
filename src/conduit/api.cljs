@@ -40,17 +40,19 @@
                   status/ok (p/resolved (parse-body body))
                   (p/rejected (parse-body body)))))))
 
-(defn fetch [{:keys [endpoint params slug method type headers]}]
+(defn fetch [{:keys [endpoint params slug method json authorized xhr-params]}]
   (let [xhr-fn (case method
                  :post xhr/post
                  :put xhr/put
                  :patch xhr/patch
-                 xhr/get)
-         xhr-params {:query-params (when-not (= method :post) params)
-                     :body (when (= method :post) (->json params))
-                     :headers (case type
-                                :json (merge headers {"Content-Type" "application/json"})
-                                headers)}]
+                 (if (not= nil json) xhr/post xhr/get))
+        xhr-params (-> xhr-params
+                       (update-in [:query-params] #(if (not= nil params) (merge % params) %))
+                       (update-in [:body] #(if (not= nil json) (->json json) %))
+                       (update-in [:headers "Content-Type"] #(if (not= nil json) "application/json" %))
+                       (update-in [:headers "Authorization"] #(if (= true authorized)
+                                                                (str "Token " (.getItem js/localStorage "jwt-token")) %))
+                       (update-in [:headers] (fn [h] (into {} (filter #(-> % val (not= nil)) h)))))]
      (-> (->endpoint endpoint slug)
          ->uri
          (->xhr xhr-fn xhr-params))))
