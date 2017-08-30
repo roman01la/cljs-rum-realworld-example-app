@@ -63,8 +63,9 @@
 (rum/defc Article <
   rum/reactive
   (mixins/dispatch-on-mount
-    {:article :load
-     :comments :load})
+   (fn []
+    {:article [:load]
+     :comments [:load]}))
   [r route params]
   (let [article (rum/react (citrus/subscription r [:article]))
         comments (rum/react (citrus/subscription r [:comments]))]

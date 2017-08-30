@@ -129,9 +129,10 @@
 (rum/defc Home <
   rum/reactive
   (mixins/dispatch-on-mount
-    {:tag-articles :reset
-     :articles :load
-     :tags :load})
+   (fn []
+    {:tag-articles [:reset]
+     :articles [:load]
+     :tags [:load]}))
   [r route params]
   (let [articles (rum/react (citrus/subscription r [:articles]))
         tags (rum/react (citrus/subscription r [:tags]))]
@@ -140,8 +141,9 @@
 (rum/defc HomeTag <
   rum/reactive
   (mixins/dispatch-on-mount
-    {:tag-articles :load
-     :tags :load})
+   (fn [_ _ {:keys [id]}]
+    {:tag-articles [:load {:tag id}]
+     :tags [:load]}))
   [r route {:keys [id]}]
   (let [tag-articles (rum/react (citrus/subscription r [:tag-articles]))
         tags (rum/react (citrus/subscription r [:tags]))]

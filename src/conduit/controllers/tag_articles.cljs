@@ -14,10 +14,10 @@
 (defmethod control :init []
   {:state initial-state})
 
-(defmethod control :load [_ [{:keys [id]}] state]
+(defmethod control :load [_ [{:keys [tag]}] state]
   {:state (assoc state :loading? true)
    :http {:endpoint :articles
-          :params {:tag id}
+          :params {:tag tag}
           :on-load :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [articles articlesCount]}] state]
