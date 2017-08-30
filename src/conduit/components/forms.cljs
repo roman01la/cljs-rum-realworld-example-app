@@ -1,31 +1,9 @@
 (ns conduit.components.forms
-  (:import goog.format.EmailAddress)
   (:require [rum.core :as rum]
+            [citrus.core :as citrus]
             [clojure.string :as cstr]
             [conduit.mixins :as mixin]
-            [citrus.core :as citrus]))
-
-(defn not-empty? [v]
-  (cond
-    (nil? v) false
-    (= "" v) false
-    :else true))
-
-(defn email? [v]
-  (.isValid (new EmailAddress v)))
-
-(defn validate! [form-data form-errors validators]
-  (let [valid? (atom true)]
-    (doseq [[k v] validators]
-      (reset! form-errors (assoc @form-errors k nil))
-      (doall (->> v
-                  (map (fn [e]
-                         (let [[validator err-msg] e
-                               value (k @form-data)]
-                           (when (not (validator value))
-                             (reset! valid? false)
-                             (reset! form-errors (assoc @form-errors k (vec (conj (k @form-errors) err-msg)))))))))))
-    @valid?))
+            [conduit.helpers.form :as form-helper]))
 
 (rum/defc InputErrors [errors input-key]
   (when-let [input-errors (get-in errors [input-key])]
@@ -45,7 +23,7 @@
   {:key-fn (fn [{input-key :input-key}] input-key)}
   [{:keys [placeholder input-key input-type validators form-data form-errors]}]
   (let [input-validators (select-keys validators [input-key])
-        validate-input! #(validate! form-data form-errors input-validators)]
+        validate-input! #(form-helper/validate! form-data form-errors input-validators)]
     [:fieldset.form-group
      [:input.form-control.form-control-lg
       {:placeholder placeholder
@@ -60,13 +38,14 @@
 (rum/defcs LoginForm <
   (mixin/form-state {:fields [{:key :email :placeholder "Email"}
                               {:key :password :placeholder "Password" :type "password"}]
-                     :validators {:email [[not-empty? "Please enter email"]
-                                          [email? "Invalid Email"]]
-                                  :password [[not-empty? "Please enter password"]]}
+                     :validators {:email [[form-helper/not-empty? "Please enter email"]
+                                          [form-helper/email? "Invalid Email"]]
+                                  :password [[form-helper/not-empty? "Please enter password"]]}
                      :submit-handler (fn [reconciler form-data form-errors form-validators]
                                        (fn [e]
                                          (.preventDefault e)
-                                         (when (validate! form-data form-errors form-validators)
+                                         (when (-> (form-helper/validate! form-data form-errors form-validators)
+                                                   form-helper/valid?)
                                            (let [{:keys [email password]} (deref form-data)]
                                              (citrus/dispatch! reconciler :user :login {:email email
                                                                                         :password password})))))})
