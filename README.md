@@ -21,3 +21,4 @@
 - Create an issue with description of the task so everyone knows what are you working on
 - Follow the code style as much as possible, we want the codebase to be consistent
 - Send PRs with small commits for a review, it's easier to understand small changes
+- Join our Gitter chat [realworld-dev/clojurescript](https://gitter.im/realworld-dev/clojurescript)
