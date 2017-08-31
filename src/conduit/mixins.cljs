@@ -22,19 +22,11 @@
   {:will-mount
    (fn [{[r _ params] :rum/args
          :as state}]
-     (let [initial-form-state {:data (reduce #(assoc %1 %2 "") {} (map #(:key %) fields))
-                               :errors (reduce #(assoc %1 %2 nil) {} (map #(:key %) fields))}
-           form-state (atom initial-form-state)
-           form-data (rum/cursor-in form-state [:data])
-           form-errors (rum/cursor-in form-state [:errors])]
+     (let [form-data (atom (->> fields (map :key) (reduce #(assoc %1 %2 "") {})))
+           form-errors (atom (->> fields (map :key) (reduce #(assoc %1 %2 nil) {})))]
        (assoc state
               :form-fields fields
               :form-validators validators
               :form-submit-handler (submit-handler r form-data form-errors validators)
-              :form-state form-state
               :form-data form-data
-              :form-errors form-errors
-              :initial-form-state initial-form-state)))
-   :will-unmount
-   (fn [{form-state :form-state initial-form-state :initial-form-state :as state}]
-     (reset! form-state initial-form-state) state)})
+              :form-errors form-errors)))})

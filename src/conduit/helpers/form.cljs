@@ -2,24 +2,33 @@
   (:import goog.format.EmailAddress))
 
 (defn not-empty? [v]
-  (cond
-    (nil? v) false
-    (= "" v) false
-    :else true))
+  (not= true (empty? v)))
 
 (defn email? [v]
-  (.isValid (new EmailAddress v)))
+  (.isValid (EmailAddress. v)))
 
-(defn validate! [form-data form-errors validators]
-  (doseq [[k v] validators]
-    (reset! form-errors (assoc @form-errors k nil))
-    (doall (->> v
-                (map (fn [e]
-                       (let [[validator err-msg] e
-                             value (k @form-data)]
-                         (when-not (validator value)
-                           (reset! form-errors (assoc @form-errors k (vec (conj (k @form-errors) err-msg)))))))))))
-    @form-errors)
+(defn check-errors
+  ([validators form-data]
+   (->> validators
+        (reduce-kv (fn [m k input-validation-pairs]
+                     (let [input-val (get form-data k)]
+                       (assoc m k (check-errors input-validation-pairs input-val true)))) {})))
+  ([input-validation-pairs input-val _]
+   (->> input-validation-pairs
+        (reduce (fn [input-err input-validation-pair]
+                  (let [[input-check err-msg] input-validation-pair]
+                    (when-not (input-check input-val)
+                      (conj input-err err-msg)))) []))))
 
-(defn valid? [form-errors]
+(defn validate!
+  ([validators form-data form-errors]
+   (reset! form-errors (check-errors validators form-data))
+   @form-errors)
+  ([validators form-data form-errors input-key]
+   (let [input-validators (select-keys validators [input-key])
+         input-errors (-> (check-errors input-validators form-data) input-key)]
+     (swap! form-errors assoc input-key input-errors)
+     @form-errors)))
+
+(defn has-errors? [form-errors]
   (reduce-kv #(if (not-empty? %3) (reduced false) true) true form-errors))
