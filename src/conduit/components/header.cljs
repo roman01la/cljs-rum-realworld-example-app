@@ -10,12 +10,14 @@
    {:label "Settings"
     :route :settings
     :icon "ion-gear-a"}
+   {:label "Sign in"
+    :route :login}
    {:label "Sign up"
     :route :sign-up}])
 
 (rum/defc NavItem [curr-route {:keys [label icon route]}]
   [:li.nav-item {:class (when (= route curr-route) "active")}
-   [:a.nav-link {:href ""}
+   [:a.nav-link {:href (str "#/" (name route))}
     (when icon [:i {:class icon}])
     (when icon " ")
     label]])
