@@ -19,7 +19,8 @@
   ["/" [["" :home]
         [["tag/" :id] :tag]
         [["article/" :id] :article]
-        ["login" :login]]])
+        ["login" :login]
+        ["register" :register]]])
 
 ;; create Reconciler instance
 (defonce reconciler

@@ -18,6 +18,9 @@
 (defmethod ->endpoint :comments [_ slug]
   (str "articles/" slug "/comments"))
 
+(defmethod ->endpoint :users [_ _]
+  "users")
+
 (defmethod ->endpoint :login [_ _]
   "users/login")
 
