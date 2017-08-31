@@ -40,13 +40,13 @@
                   status/ok (p/resolved (parse-body body))
                   (p/rejected (parse-body body)))))))
 
-(defn fetch [{:keys [endpoint params slug method json authorized xhr-params]}]
+(defn fetch [{:keys [endpoint params slug method json authorized xhr-options]}]
   (let [xhr-fn (case method
                  :post xhr/post
                  :put xhr/put
                  :patch xhr/patch
                  (if (not= nil json) xhr/post xhr/get))
-        xhr-params (-> xhr-params
+        xhr-params (-> xhr-options
                        (update-in [:query-params] #(if (not= nil params) (merge % params) %))
                        (update-in [:body] #(if (not= nil json) (->json json) %))
                        (update-in [:headers "Content-Type"] #(if (not= nil json) "application/json" %))
