@@ -42,9 +42,9 @@
                 :password [[#(not (empty? %)) "Please enter password"]]}
    :on-submit
    (fn [reconciler data errors validators]
-     #(let [{:keys [email password]} data]
-        (citrus/dispatch! reconciler :user :login {:email email
-                                                   :password password})))})
+     (let [{:keys [email password]} data]
+       (citrus/dispatch! reconciler :user :login {:email email
+                                                  :password password})))})
 
 (defn- with-prevent-default [e]
   (.preventDefault e)
