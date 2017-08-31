@@ -3,21 +3,26 @@
 
 (def nav-items
   [{:label "Home"
-    :route :home}
+    :route :home
+    :link "/"}
    {:label "New Post"
     :route :new-post
-    :icon "ion-compose"}
+    :icon "ion-compose"
+    :link "/new-post"}
    {:label "Settings"
     :route :settings
-    :icon "ion-gear-a"}
+    :icon "ion-gear-a"
+    :link "/settings"}
    {:label "Sign in"
-    :route :login}
+    :route :login
+    :link "/login"}
    {:label "Sign up"
-    :route :sign-up}])
+    :route :sign-up
+    :link "/register"}])
 
-(rum/defc NavItem [curr-route {:keys [label icon route]}]
+(rum/defc NavItem [curr-route {:keys [label icon route link]}]
   [:li.nav-item {:class (when (= route curr-route) "active")}
-   [:a.nav-link {:href (str "#/" (name route))}
+   [:a.nav-link {:href (str "#" link)}
     (when icon [:i {:class icon}])
     (when icon " ")
     label]])
