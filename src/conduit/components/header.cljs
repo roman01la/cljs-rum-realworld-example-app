@@ -27,9 +27,15 @@
     (when icon " ")
     label]])
 
-(rum/defc Header [r route]
-  [:nav.navbar.navbar-light
-   [:div.container
-    [:a.navbar-brand {:href "#/"} "conduit"]
-    [:ul.nav.navbar-nav.pull-xs-right
-     (map #(rum/with-key (NavItem route %) (:label %)) nav-items)]]])
+(rum/defc Header [r route current-user]
+  (let [user-nav-items (if current-user
+                         (->> {:label (str "Hi, " (:username current-user))
+                               :route :user
+                               :link (str "/users/" (:username current-user))}
+                              (conj (filter #(contains? #{:home :new-post :settings} (:route %)) nav-items)))
+                         (filter #(contains? #{:home :login :sign-up} (:route %)) nav-items))]
+    [:nav.navbar.navbar-light
+     [:div.container
+      [:a.navbar-brand {:href "#/"} "conduit"]
+      [:ul.nav.navbar-nav.pull-xs-right
+       (map #(rum/with-key (NavItem route %) (:label %)) user-nav-items)]]]))

@@ -24,6 +24,9 @@
 (defmethod ->endpoint :login [_ _]
   "users/login")
 
+(defmethod ->endpoint :user [_ _]
+  "user")
+
 (defn- ->uri [path]
   (str "https://conduit.productionready.io/api/" path))
 

@@ -5,7 +5,6 @@
             [conduit.components.base :as base]
             [conduit.components.grid :as grid]
             [conduit.mixins :as mixins]
-            [conduit.components.header :refer [Header]]
             [conduit.components.comment :as comment]))
 
 (rum/defc Banner [{:keys [loading? title author createdAt favoritesCount]}]
@@ -69,8 +68,6 @@
   [r route params]
   (let [article (rum/react (citrus/subscription r [:article]))
         comments (rum/react (citrus/subscription r [:comments]))]
-    [:div
-     (Header r route)
-     [:div.article-page
-      (Banner article)
-      (Page r article comments)]]))
+    [:div.article-page
+     (Banner article)
+     (Page r article comments)]))
