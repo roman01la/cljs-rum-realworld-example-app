@@ -3,14 +3,13 @@
             [conduit.api :as api]
             [promesa.core :as p]))
 
-(defn http [r c {:keys [endpoint params slug on-load on-error method json authorized xhr-options]}]
+(defn http [r c {:keys [endpoint params slug on-load on-error method type headers]}]
   (-> (api/fetch {:endpoint endpoint
                   :params params
                   :slug slug
                   :method method
-                  :json json
-                  :authorized authorized
-                  :xhr-options xhr-options})
+                  :type type
+                  :headers headers})
       (p/then #(citrus/dispatch! r c on-load %))
       (p/catch #(citrus/dispatch! r c on-error %))))
 
