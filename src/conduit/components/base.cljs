@@ -4,16 +4,23 @@
 (rum/defc Icon [icon]
   [:i {:class (str "ion-" (name icon))}])
 
+(defn- btn-class [class type size outline?]
+  (str
+    class
+    " "
+    (case size
+      :L "btn-lg"
+      "btn-sm")
+    " "
+    (case type
+      :secondary (str "btn-" (if outline? "outline-secondary" "secondary"))
+      (str "btn-" (if outline? "outline-primary" "primary")))))
+
 (rum/defc Button
   ([label]
    (Button {} label))
-  ([{:keys [icon class type]} label]
-   [:button.btn.btn-sm
-    {:class
-     (case type
-       :primary "btn-outline-primary"
-       :secondary "btn-outline-secondary"
-       "btn-outline-primary")}
+  ([{:keys [icon class type size outline?]} label]
+   [:button.btn {:class (btn-class class type size outline?)}
     (when icon (Icon icon))
     (when icon " ")
     label]))
