@@ -19,8 +19,10 @@
 (rum/defc Button
   ([label]
    (Button {} label))
-  ([{:keys [icon class type size outline?]} label]
-   [:button.btn {:class (btn-class class type size outline?)}
+  ([{:keys [icon class type size outline? disabled?]} label]
+   [:button.btn
+    {:class (btn-class class type size outline?)
+     :disabled disabled?}
     (when icon (Icon icon))
     (when icon " ")
     label]))

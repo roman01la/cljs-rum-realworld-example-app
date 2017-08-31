@@ -15,15 +15,48 @@
          (apply citrus/dispatch! (into [r ctrl] event-vector))))
      state)})
 
-(defn form-state [{:keys [fields validators submit-handler]}]
-  {:will-mount
-   (fn [{[r _ params] :rum/args
-         :as state}]
-     (let [form-data (atom (->> fields (map :key) (reduce #(assoc %1 %2 "") {})))
-           form-errors (atom (->> fields (map :key) (reduce #(assoc %1 %2 nil) {})))]
-       (assoc state
-              :form-fields fields
-              :form-validators validators
-              :form-submit-handler (submit-handler r form-data form-errors validators)
-              :form-data form-data
-              :form-errors form-errors)))})
+
+(defn- check-errors [validators value]
+  (->> validators
+       (filter (fn [[validator]] (-> value validator not)))
+       (map second)))
+
+(defn form [{:keys [fields validators on-submit]}]
+  (let [data-init (->> fields keys (reduce #(assoc %1 %2 "") {}))
+        errors-init (->> fields keys (reduce #(assoc %1 %2 nil) {}))
+        fields-init fields
+        data (atom data-init)
+        errors (atom errors-init)
+        fields (atom fields-init)]
+    {:will-mount
+     (fn [{[r] :rum/args
+           comp :rum/react-component
+           :as state}]
+       (add-watch data ::form-data (fn [_ _ old-state next-state]
+                                     (when-not (= old-state next-state)
+                                       (rum/request-render comp))))
+       (add-watch errors ::form-errors (fn [_ _ old-state next-state]
+                                         (when-not (= old-state next-state)
+                                           (rum/request-render comp))))
+       state)
+     :will-unmount
+     (fn [state]
+       (remove-watch data ::form-data)
+       (remove-watch errors ::form-errors)
+       (reset! data data-init)
+       (reset! errors errors-init)
+       (reset! fields fields-init)
+       (assoc state ::form {}))
+     :wrap-render
+     (fn [render-fn]
+       (fn [{[r] :rum/args :as state}]
+         (let [state
+               (assoc state ::form {:fields @fields
+                                    :validators validators
+                                    :validate #(swap! errors assoc %1 (check-errors (get validators %1) %2))
+                                    :on-change #(swap! data assoc %1 %2)
+                                    :on-submit #(on-submit r @data @errors validators)
+                                    :on-focus #(swap! fields assoc-in [% :touched?] true)
+                                    :data @data
+                                    :errors @errors})]
+           (render-fn state))))}))

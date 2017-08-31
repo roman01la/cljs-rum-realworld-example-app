@@ -22,7 +22,9 @@
           :on-error :form-submit-error}})
 
 (defmethod control :login-success [_ [{user :user {token :token} :user}] state]
-  {:state (assoc state :token token :current-user user :errors nil)
+  {:state (assoc state :token token
+                       :current-user user
+                       :errors nil)
    :local-storage {:action :set
                    :id "jwt-token"
                    :value token}
