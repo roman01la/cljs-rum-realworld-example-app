@@ -51,7 +51,13 @@
 (defmethod control :clear-errors [_ _ state]
   {:state (assoc state :errors nil)})
 
-(defmethod control :set-token [_ [token] state]
+(defmethod control :check-auth [_ _ state]
+  {:state state
+   :local-storage {:action :get
+                   :id "jwt-token"
+                   :on-success :load-user}})
+
+(defmethod control :load-user [_ [token] state]
   {:state (assoc state :token token)
    :http {:endpoint :user
           :headers {"Authorization" (str "Token " token)}

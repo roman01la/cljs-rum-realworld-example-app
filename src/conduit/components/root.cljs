@@ -1,6 +1,7 @@
 (ns conduit.components.root
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
+            [conduit.mixins :as mixins]
             [conduit.components.home :as home]
             [conduit.components.article :as article]
             [conduit.components.login :as login]
@@ -9,11 +10,8 @@
             [conduit.components.footer :refer [Footer]]))
 
 (rum/defc Root < rum/reactive
-  {:did-mount
-   (fn [{[r] :rum/args :as state}]
-     (when-let [token (.getItem js/localStorage "jwt-token")]
-       (citrus/dispatch! r :user :set-token token))
-     state)}
+  (mixins/dispatch-on-mount
+   (fn [] {:user [:check-auth]}))
   [r]
   (let [{route :handler params :route-params}
         (rum/react (citrus/subscription r [:router]))
