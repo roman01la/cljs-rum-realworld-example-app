@@ -36,7 +36,8 @@
       :user user/control}
      :effect-handlers {:http effects/http
                        :local-storage effects/local-storage
-                       :redirect effects/redirect}}))
+                       :redirect effects/redirect
+                       :dispatch effects/dispatch}}))
 
 ;; initialize controllers
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))

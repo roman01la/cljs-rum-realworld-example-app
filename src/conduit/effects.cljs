@@ -25,3 +25,7 @@
 
 (defn redirect [_ _ path]
   (set! (.-hash js/location) (str "#/" path)))
+
+(defn dispatch [r _ events]
+  (doseq [[ctrl event-vector] events]
+    (apply citrus/dispatch! (into [r ctrl] event-vector))))
