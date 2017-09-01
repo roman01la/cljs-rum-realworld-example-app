@@ -3,9 +3,7 @@
             [citrus.core :as citrus]
             [conduit.mixins :as mixins]
             [conduit.components.grid :as grid]
-            [conduit.components.base :as base]
-            [conduit.components.header :refer [Header]]
-            [conduit.components.footer :refer [Footer]]))
+            [conduit.components.base :as base]))
 
 (rum/defc Banner []
   [:div.banner
@@ -104,27 +102,24 @@
 
 (rum/defc -Home < rum/static
   [r {:keys [articles loading? pages-count page]} tags id]
-  [:div
-   (Header r :home)
-   (Layout r {:articles articles
-              :loading? loading?
-              :pagination
-              {:pages-count pages-count
-               :page page
-               :slug id}
-              :tags tags
-              :tabs
-              [{:label "Your Feed"
-                :active? false
-                :link "#/"}
-               {:label "Global Feed"
-                :active? (nil? id)
-                :link "#/"}
-               (when id
-                 {:label (str " " id)
-                  :icon "ion-pound"
-                  :active? true})]})
-   (Footer)])
+  (Layout r {:articles articles
+             :loading? loading?
+             :pagination
+             {:pages-count pages-count
+              :page page
+              :slug id}
+             :tags tags
+             :tabs
+             [{:label "Your Feed"
+               :active? false
+               :link "#/"}
+              {:label "Global Feed"
+               :active? (nil? id)
+               :link "#/"}
+              (when id
+                {:label (str " " id)
+                 :icon "ion-pound"
+                 :active? true})]}))
 
 (rum/defc Home <
   rum/reactive

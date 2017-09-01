@@ -17,6 +17,11 @@
 
 (defmulti local-storage (fn [_ _ params] (:action params)))
 
+(defmethod local-storage :get [r c {:keys [id on-success on-error]}]
+  (if-let [token (.getItem js/localStorage id)]
+    (citrus/dispatch! r c on-success token)
+    (citrus/dispatch! r c on-error)))
+
 (defmethod local-storage :set [_ _ {:keys [id value]}]
   (.setItem js/localStorage id value))
 
