@@ -35,6 +35,9 @@
       js/JSON.parse
       (js->clj :keywordize-keys true)))
 
+(defn- ->json [params]
+  (.stringify js/JSON (clj->js params)))
+
 (defn- ->xhr [uri xhr-fn params]
   (-> uri
       (xhr-fn params)
@@ -43,26 +46,17 @@
                   status/ok (p/resolved (parse-body body))
                   (p/rejected (parse-body body)))))))
 
-(defn fetch
-  ([endpoint]
-   (fetch endpoint nil))
-  ([endpoint params]
-   (fetch endpoint params nil))
-  ([endpoint params slug]
-   (fetch endpoint params slug nil))
-  ([endpoint params slug headers]
-   (-> (->endpoint endpoint slug)
-       ->uri
-       (->xhr xhr/get {:query-params params
-                       :headers headers}))))
-
-(defn post
-  ([endpoint]
-   (fetch endpoint nil))
-  ([endpoint params]
-   (fetch endpoint params nil))
-  ([endpoint params slug]
-   (-> (->endpoint endpoint slug)
-       ->uri
-       (->xhr xhr/post {:body (.stringify js/JSON (clj->js params))
-                        :headers {"Content-Type" "application/json"}}))))
+(defn fetch [{:keys [endpoint params slug method type headers]}]
+  (let [xhr-fn (case method
+                 :post xhr/post
+                 :put xhr/put
+                 :patch xhr/patch
+                 xhr/get)
+         xhr-params {:query-params (when-not (= method :post) params)
+                     :body (when (= method :post) (->json params))
+                     :headers (case type
+                                :json (merge headers {"Content-Type" "application/json"})
+                                headers)}]
+     (-> (->endpoint endpoint slug)
+         ->uri
+         (->xhr xhr-fn xhr-params))))

@@ -18,6 +18,7 @@
    :http {:endpoint :login
           :params {:user {:email email :password password}}
           :method :post
+          :type :json
           :on-load :login-success
           :on-error :form-submit-error}})
 
