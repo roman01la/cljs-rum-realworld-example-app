@@ -30,3 +30,12 @@
 
 (defmethod control :reset []
   {:state initial-state})
+
+(defmethod control :update [_ [id transform data] state]
+  {:state (update state :articles (fn [articles]
+                                    (map
+                                      (fn [article]
+                                        (if (= (:slug article) id)
+                                          (transform data)
+                                          article))
+                                      articles)))})

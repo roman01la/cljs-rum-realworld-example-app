@@ -27,6 +27,12 @@
 (defmethod ->endpoint :user [_ _]
   "user")
 
+(defmethod ->endpoint :follow [_ slug]
+  (str "profiles/" slug "/follow"))
+
+(defmethod ->endpoint :favorite [_ slug]
+  (str "articles/" slug "/favorite"))
+
 (defn- ->uri [path]
   (str "https://conduit.productionready.io/api/" path))
 
@@ -51,6 +57,7 @@
     :post xhr/post
     :put xhr/put
     :patch xhr/patch
+    :delete xhr/delete
     xhr/get))
 
 (defn- type->header [type]

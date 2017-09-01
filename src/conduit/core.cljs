@@ -11,6 +11,7 @@
             [conduit.controllers.comments :as comments]
             [conduit.controllers.router :as router-controller]
             [conduit.controllers.user :as user]
+            [conduit.controllers.profile :as profile]
             [conduit.components.root :refer [Root]]
             [conduit.components.home :as home]
             [conduit.components.article :refer [Article]]))
@@ -25,19 +26,19 @@
 ;; create Reconciler instance
 (defonce reconciler
   (citrus/reconciler
-    {:state (atom {})
-     :controllers
-     {:articles articles/control
-      :tag-articles tag-articles/control
-      :tags tags/control
-      :article article/control
-      :comments comments/control
-      :router router-controller/control
-      :user user/control}
-     :effect-handlers {:http effects/http
+    {:state           (atom {})
+     :controllers     {:articles     articles/control
+                       :tag-articles tag-articles/control
+                       :tags         tags/control
+                       :article      article/control
+                       :comments     comments/control
+                       :router       router-controller/control
+                       :user         user/control
+                       :profile      profile/control}
+     :effect-handlers {:http          effects/http
                        :local-storage effects/local-storage
-                       :redirect effects/redirect
-                       :dispatch effects/dispatch}}))
+                       :redirect      effects/redirect
+                       :dispatch      effects/dispatch}}))
 
 ;; initialize controllers
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
