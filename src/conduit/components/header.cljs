@@ -32,10 +32,11 @@
     (when icon " ")
     label]])
 
-(rum/defc Header [r route current-user]
-  (let [user-nav-items (filter #(not= (if current-user :non-logged :logged) (:display-for %)) nav-items)]
+(rum/defc Header [r route {:keys [loading? logged-in?]}]
+  (let [user-nav-items (filter #(not= (if logged-in? :non-logged :logged) (:display-for %)) nav-items)]
     [:nav.navbar.navbar-light
      [:div.container
       [:a.navbar-brand {:href "#/"} "conduit"]
-      [:ul.nav.navbar-nav.pull-xs-right
-       (map #(rum/with-key (NavItem route %) (:label %)) user-nav-items)]]]))
+      (when-not loading?
+        [:ul.nav.navbar-nav.pull-xs-right
+         (map #(rum/with-key (NavItem route %) (:label %)) user-nav-items)])]]))

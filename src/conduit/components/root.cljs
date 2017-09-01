@@ -15,9 +15,10 @@
   [r]
   (let [{route :handler params :route-params}
         (rum/react (citrus/subscription r [:router]))
-        current-user (rum/react (citrus/subscription r [:user :current-user]))]
+        {:keys [current-user loading?]} (rum/react (citrus/subscription r [:user]))]
     [:div
-     (Header r route current-user)
+     (Header r route {:loading? loading?
+                      :logged-in? current-user})
      (case route
        :home (home/Home r route params)
        :tag (home/HomeTag r route params)

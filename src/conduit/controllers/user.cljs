@@ -2,6 +2,7 @@
 
 (def initial-state
   {:current-user nil
+   :loading?     false
    :token        nil
    :errors       nil})
 
@@ -58,10 +59,10 @@
                    :on-success :load-user}})
 
 (defmethod control :load-user [_ [token] state]
-  {:state (assoc state :token token)
+  {:state (assoc state :token token :loading? true)
    :http  {:endpoint :user
            :token    token
            :on-load  :load-user-success}})
 
 (defmethod control :load-user-success [_ [{:keys [user]}] state]
-  {:state (assoc state :current-user user)})
+  {:state (assoc state :current-user user :loading? false)})
