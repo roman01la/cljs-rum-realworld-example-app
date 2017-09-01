@@ -21,7 +21,9 @@
         [["tag/" :id] :tag]
         [["article/" :id] :article]
         ["login" :login]
-        ["register" :register]]])
+        ["logout" :logout]
+        ["register" :register]
+        ["settings" :settings]]])
 
 ;; create Reconciler instance
 (defonce reconciler
@@ -43,7 +45,12 @@
 ;; initialize controllers
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
 
-(router/start! #(citrus/dispatch! reconciler :router :push %) routes)
+(router/start! (fn [route]
+                 (doall
+                  [(citrus/dispatch! reconciler :router :push route)
+                   (when (= (:handler route) :logout)
+                     (citrus/dispatch! reconciler :user :logout))]))
+                 routes)
 
 (rum/mount (Root reconciler)
            (dom/getElement "app"))

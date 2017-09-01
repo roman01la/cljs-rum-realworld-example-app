@@ -72,8 +72,8 @@
 
 (defn fetch [{:keys [endpoint params slug method type headers token]}]
   (let [xhr-fn (method->xhr-fn method)
-        xhr-params {:query-params (when-not (= method :post) params)
-                    :body         (when (= method :post) (->json params))
+        xhr-params {:query-params (when-not (contains? #{:post :put :patch} method) params)
+                    :body         (when (contains? #{:post :put :patch} method) (->json params))
                     :headers      (merge headers (type->header type) (token->header token))}]
     (-> (->endpoint endpoint slug)
         ->uri

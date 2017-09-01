@@ -6,6 +6,7 @@
             [conduit.components.article :as article]
             [conduit.components.login :as login]
             [conduit.components.register :as register]
+            [conduit.components.settings :as settings]
             [conduit.components.header :refer [Header]]
             [conduit.components.footer :refer [Footer]]))
 
@@ -25,5 +26,6 @@
        :article (article/Article r route params)
        :login (login/Login r route params)
        :register (register/Register r route params)
+       :settings (settings/Settings r route params)
        [:div "404"])
      (Footer)]))

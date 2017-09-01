@@ -47,7 +47,9 @@
    :redirect      ""})
 
 (defmethod control :form-submit-error [_ [{errors :errors}] state]
-  {:state (assoc state :errors errors)})
+  {:state (assoc state
+                 :errors   errors
+                 :loading? false)})
 
 (defmethod control :clear-errors [_ _ state]
   {:state (assoc state :errors nil)})
@@ -66,3 +68,28 @@
 
 (defmethod control :load-user-success [_ [{:keys [user]}] state]
   {:state (assoc state :current-user user :loading? false)})
+
+(defmethod control :update-settings [_ [{:keys [username email password image bio]}] state]
+  {:state (assoc state :loading? true)
+   :http  {:endpoint :user
+           :params   {:user {:username username
+                             :email email
+                             :password password
+                             :image image
+                             :bio bio}}
+           :method   :put
+           :token    (:token state)
+           :on-load  :update-settings-success
+           :on-error :form-submit-error}})
+
+(defmethod control :update-settings-success [_ [{user :user}] state]
+  {:state    (assoc state :current-user user
+                          :errors       nil
+                          :loading?     false)
+   :redirect ""})
+
+(defmethod control :logout []
+  {:state         initial-state
+   :local-storage {:action :remove
+                   :id     "jwt-token"}
+   :redirect      ""})
