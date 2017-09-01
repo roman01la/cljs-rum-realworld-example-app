@@ -3,15 +3,17 @@
             [conduit.api :as api]
             [promesa.core :as p]))
 
-(defn http [r c {:keys [endpoint params slug on-load on-error method type headers]}]
+(defn http [r c {:keys [endpoint params slug on-load on-error method type headers token]}]
   (-> (api/fetch {:endpoint endpoint
-                  :params params
-                  :slug slug
-                  :method method
-                  :type type
-                  :headers headers})
+                  :params   params
+                  :slug     slug
+                  :method   method
+                  :type     type
+                  :headers  headers
+                  :token    token})
       (p/then #(citrus/dispatch! r c on-load %))
       (p/catch #(citrus/dispatch! r c on-error %))))
+
 
 (defmulti local-storage (fn [_ _ params] (:action params)))
 
@@ -26,8 +28,10 @@
 (defmethod local-storage :remove [_ _ {:keys [id]}]
   (.removeItem js/localStorage id))
 
+
 (defn redirect [_ _ path]
   (set! (.-hash js/location) (str "#/" path)))
+
 
 (defn dispatch [r _ events]
   (doseq [[ctrl event-vector] events]

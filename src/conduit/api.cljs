@@ -46,17 +46,28 @@
                   status/ok (p/resolved (parse-body body))
                   (p/rejected (parse-body body)))))))
 
-(defn fetch [{:keys [endpoint params slug method type headers]}]
-  (let [xhr-fn (case method
-                 :post xhr/post
-                 :put xhr/put
-                 :patch xhr/patch
-                 xhr/get)
-         xhr-params {:query-params (when-not (= method :post) params)
-                     :body (when (= method :post) (->json params))
-                     :headers (case type
-                                :json (merge headers {"Content-Type" "application/json"})
-                                headers)}]
-     (-> (->endpoint endpoint slug)
-         ->uri
-         (->xhr xhr-fn xhr-params))))
+(defn- method->xhr-fn [method]
+  (case method
+    :post xhr/post
+    :put xhr/put
+    :patch xhr/patch
+    xhr/get))
+
+(defn- type->header [type]
+  (case type
+    :text {"Content-Type" "text/plain"}
+    {"Content-Type" "application/json"}))
+
+(defn- token->header [token]
+  (if token
+    {"Authorization" (str "Token " token)}
+    {}))
+
+(defn fetch [{:keys [endpoint params slug method type headers token]}]
+  (let [xhr-fn (method->xhr-fn method)
+        xhr-params {:query-params (when-not (= method :post) params)
+                    :body         (when (= method :post) (->json params))
+                    :headers      (merge headers (type->header type) (token->header token))}]
+    (-> (->endpoint endpoint slug)
+        ->uri
+        (->xhr xhr-fn xhr-params))))
