@@ -27,6 +27,9 @@
 (defmethod ->endpoint :user [_ _]
   "user")
 
+(defmethod ->endpoint :profile [_ slug]
+  (str "profiles/" slug))
+
 (defmethod ->endpoint :follow [_ slug]
   (str "profiles/" slug "/follow"))
 

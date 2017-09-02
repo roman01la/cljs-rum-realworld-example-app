@@ -14,6 +14,24 @@
 (defmethod control :load [_ _ state]
   {:state state})
 
+(defmethod control :load-profile [_ [id token] state]
+  {:state (assoc state :loadings? true)
+   :http (into {:endpoint :profile
+                :slug     id
+                :on-load  :load-profile-ready
+                :on-error :load-profile-error}
+               (when token {:token token}))})
+
+(defmethod control :load-profile-ready [_ [{profile :profile}] state]
+  {:state (assoc state
+                 :profile  profile
+                 :loading? false)})
+
+(defmethod control :load-profile-error [_ _ state]
+  {:state (assoc state
+                 :profile  nil
+                 :loading? false)})
+
 (defmethod control :follow [_ [id token callback]]
   {:http {:endpoint :follow
           :slug     id
@@ -41,3 +59,6 @@
 
 (defmethod control :unfollow-error [_ _ state]
   {:state state})
+
+(defmethod control :update [_ [{profile :profile}] state]
+  {:state (assoc state :profile profile)})

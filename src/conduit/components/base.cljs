@@ -33,7 +33,7 @@
    [:a {:href "profile.html"}
     [:img {:src image}]]
    [:div.info
-    [:a.author {:href ""} username]
+    [:a.author {:href (str "#/profile/" username)} username]
     [:span.date (-> createdAt js/Date. .toDateString)]]
    children])
 
@@ -45,3 +45,12 @@
                 {:key tag}
                 [:a {:href (str "#/tag/" tag)}
                  tag]])))])
+
+(rum/defc FollowButton [username following? on-follow on-unfollow]
+  (Button
+   {:icon     :plus-round
+    :type     :secondary
+    :on-click (if following? on-unfollow on-follow)}
+   (if following?
+     (str "Unfollow " username " ")
+     (str "Follow " username " "))))

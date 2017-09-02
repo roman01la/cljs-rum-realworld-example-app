@@ -17,7 +17,7 @@
     :link "/settings"
     :display-for :logged}
    {:label "Sign in"
-    :route :login
+    :route :sign-in
     :link "/login"
     :display-for :non-logged}
    {:label "Sign up"
@@ -32,8 +32,13 @@
     (when icon " ")
     label]])
 
-(rum/defc Header [r route {:keys [loading? logged-in?]}]
-  (let [user-nav-items (filter #(not= (if logged-in? :non-logged :logged) (:display-for %)) nav-items)]
+(rum/defc Header [r route {:keys [loading? current-user]}]
+  (let [user-nav-items (->> nav-items
+                            (filter #(not= (if current-user :non-logged :logged) (:display-for %)))
+                            (#(if current-user
+                                (into (vec %) [{:label (:username current-user)
+                                                :route :profile
+                                                :link  (str "/profile/" (:username current-user))}]) %)))]
     [:nav.navbar.navbar-light
      [:div.container
       [:a.navbar-brand {:href "#/"} "conduit"]

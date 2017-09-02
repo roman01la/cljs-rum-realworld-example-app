@@ -26,13 +26,7 @@
           {:username  username
            :createdAt createdAt
            :image     image}
-          (base/Button
-            {:icon     :plus-round
-             :type     :secondary
-             :on-click (if following? on-unfollow on-follow)}
-            (if following?
-              (str "Unfollow " username " ")
-              (str "Follow " username " ")))
+          (base/FollowButton username following? on-follow on-unfollow)
           [:span "  "]
           (base/Button
             {:icon     :heart
@@ -55,13 +49,7 @@
        {:username  username
         :createdAt createdAt
         :image     image}
-       (base/Button
-         {:icon     :plus-round
-          :type     :secondary
-          :on-click (if following? on-unfollow on-follow)}
-         (if following?
-           (str "Unfollow " username " ")
-           (str "Follow " username " ")))
+       (base/FollowButton username following? on-follow on-unfollow)
        [:span "  "]
        (base/Button
          {:icon     :heart

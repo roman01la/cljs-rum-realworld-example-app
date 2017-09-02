@@ -6,6 +6,7 @@
             [conduit.components.article :as article]
             [conduit.components.login :as login]
             [conduit.components.register :as register]
+            [conduit.components.profile :as profile]
             [conduit.components.header :refer [Header]]
             [conduit.components.footer :refer [Footer]]))
 
@@ -18,12 +19,13 @@
         {:keys [current-user loading?]} (rum/react (citrus/subscription r [:user]))]
     [:div
      (Header r route {:loading? loading?
-                      :logged-in? current-user})
+                      :current-user current-user})
      (case route
        :home (home/Home r route params)
        :tag (home/HomeTag r route params)
        :article (article/Article r route params)
-       :login (login/Login r route params)
-       :register (register/Register r route params)
+       :sign-in (login/Login r route params)
+       :sign-up (register/Register r route params)
+       :profile (profile/Profile r route params current-user)
        [:div "404"])
      (Footer)]))
