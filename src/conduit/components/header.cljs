@@ -7,9 +7,9 @@
     :link "/"
     :display-for :always}
    {:label "New Post"
-    :route :new-post
+    :route :editor
     :icon "ion-compose"
-    :link "/new-post"
+    :link "/editor"
     :display-for :logged}
    {:label "Settings"
     :route :settings

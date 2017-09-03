@@ -24,9 +24,19 @@
 (defn form [{:keys [fields validators on-submit]}]
   (let [data-init (->> fields keys (reduce #(assoc %1 %2 "") {}))
         errors-init (->> fields keys (reduce #(assoc %1 %2 nil) {}))
-        fields-init fields
         data (atom data-init)
         errors (atom errors-init)
+        fields-init (->> fields
+                         (reduce-kv
+                          (fn [m k v]
+                            (assoc m k (-> v
+                                           (#(if (contains? % :container)
+                                               (assoc % :container ((:container %) data errors k)) %))
+                                           (#(if (contains? % :events)
+                                               (assoc % :events
+                                                      (into {} (for [[evt-name evt-fn] (:events %)]
+                                                                 {evt-name (evt-fn data errors k)}))) %)))))
+                          {}))
         fields (atom fields-init)]
     {:will-mount
      (fn [{[r] :rum/args
@@ -55,7 +65,7 @@
                                     :validators validators
                                     :validate #(swap! errors assoc %1 (check-errors (get validators %1) %2))
                                     :on-change #(swap! data assoc %1 %2)
-                                    :on-submit #(on-submit r @data @errors validators)
+                                    :on-submit #(on-submit r @data @errors validators %)
                                     :on-focus #(swap! fields assoc-in [% :touched?] true)
                                     :data @data
                                     :errors @errors})]
