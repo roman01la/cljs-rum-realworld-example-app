@@ -21,7 +21,7 @@
        (filter (fn [[validator]] (-> value validator not)))
        (map second)))
 
-(defn form [{:keys [fields validators on-submit]}]
+(defn form [{:keys [fields validators on-submit on-init]}]
   (let [data-init (->> fields keys (reduce #(assoc %1 %2 "") {}))
         errors-init (->> fields keys (reduce #(assoc %1 %2 nil) {}))
         fields-init fields
@@ -29,10 +29,12 @@
         errors (atom errors-init)
         fields (atom fields-init)]
     {:will-mount
-     (fn [{[r _ _ current-values] :rum/args
+     (fn [{[r] :rum/args
            comp :rum/react-component
            :as state}]
-       (when current-values (reset! data (into {} (for [[k v] @data] {k (get current-values k)}))))
+       (when on-init
+         (let [{init-data :data} (on-init (keys @fields) state)]
+           (when data (reset! data init-data))))
        (add-watch data ::form-data (fn [_ _ old-state next-state]
                                      (when-not (= old-state next-state)
                                        (rum/request-render comp))))

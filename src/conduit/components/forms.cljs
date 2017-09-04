@@ -24,9 +24,9 @@
 (rum/defc InputField
   [{:keys [placeholder type value errors on-blur on-focus on-change field-type]}]
   (let [input-field (case field-type
-                :textarea (fn [settings]
-                            [:textarea.form-control.form-control-lg (assoc settings :rows 8)])
-                (fn [settings] [:input.form-control.form-control-lg settings]))]
+                :textarea (fn [attrs & children]
+                            (apply vector :textarea.form-control.form-control-lg (assoc attrs :rows 8) children))
+                (fn [& children] (apply vector :input.form-control.form-control-lg children)))]
     [:fieldset.form-group
      (input-field
       {:placeholder placeholder
@@ -75,14 +75,18 @@
    :validators {:username [[#(not (empty? %)) "Please enter username"]]
                 :email [[#(not (empty? %)) "Please enter email"]
                         [form-helper/email? "Invalid Email"]]}
+   :on-init
+   (fn [fields {[_ _ _ current-user] :rum/args}]
+     {:data (into {} (for [field-key fields] {field-key (get current-user field-key)}))})
    :on-submit
    (fn [reconciler data errors validators]
      (let [{:keys [username email password image bio]} data]
-       (citrus/dispatch! reconciler :user :update-settings {:username username
-                                                            :email email
-                                                            :password password
-                                                            :image image
-                                                            :bio bio})))})
+       (citrus/dispatch! reconciler :user :update-settings
+                         {:username username
+                          :email    email
+                          :password password
+                          :image    image
+                          :bio      bio})))})
 
 (defn- with-prevent-default [e]
   (.preventDefault e)
