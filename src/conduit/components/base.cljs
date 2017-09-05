@@ -46,7 +46,7 @@
                 [:a {:href (str "#/tag/" tag)}
                  tag]])))])
 
-(rum/defc FollowButton [username following? on-follow on-unfollow]
+(rum/defc FollowButton [{:keys [username following? on-follow on-unfollow]}]
   (Button
    {:icon     :plus-round
     :type     :secondary

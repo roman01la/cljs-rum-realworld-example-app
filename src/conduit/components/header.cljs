@@ -25,6 +25,18 @@
     :link "/register"
     :display-for :non-logged}])
 
+(defmulti user-nav-items (fn [_ user] (if (nil? user) :non-logged :logged)))
+
+(defmethod user-nav-items :non-logged [nav-items]
+  (filter #(not= :logged (:display-for %)) nav-items))
+
+(defmethod user-nav-items :logged [nav-items current-user]
+  (-> (filter #(not= :non-logged (:display-for %)) nav-items)
+      vec
+      (into [{:label (:username current-user)
+              :route :profile
+              :link  (str "/profile/" (:username current-user))}])))
+
 (rum/defc NavItem [curr-route {:keys [label icon route link]}]
   [:li.nav-item {:class (when (= route curr-route) "active")}
    [:a.nav-link {:href (str "#" link)}
@@ -33,15 +45,9 @@
     label]])
 
 (rum/defc Header [r route {:keys [loading? current-user]}]
-  (let [user-nav-items (->> nav-items
-                            (filter #(not= (if current-user :non-logged :logged) (:display-for %)))
-                            (#(if current-user
-                                (into (vec %) [{:label (:username current-user)
-                                                :route :profile
-                                                :link  (str "/profile/" (:username current-user))}]) %)))]
-    [:nav.navbar.navbar-light
-     [:div.container
-      [:a.navbar-brand {:href "#/"} "conduit"]
-      (when-not loading?
-        [:ul.nav.navbar-nav.pull-xs-right
-         (map #(rum/with-key (NavItem route %) (:label %)) user-nav-items)])]]))
+  [:nav.navbar.navbar-light
+   [:div.container
+    [:a.navbar-brand {:href "#/"} "conduit"]
+    (when-not loading?
+      [:ul.nav.navbar-nav.pull-xs-right
+       (map #(rum/with-key (NavItem route %) (:label %)) (user-nav-items nav-items current-user))])]])

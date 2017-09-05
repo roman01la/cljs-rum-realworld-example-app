@@ -14,7 +14,10 @@
      [:.pull-xs-right
       (when current-user
         (if-not profile-owner?
-          (base/FollowButton username following on-follow on-unfollow)
+          (base/FollowButton {:username username
+                              :following? following
+                              :on-follow on-follow
+                              :on-unfollow on-unfollow})
           (base/Button {:href (str "#/settings")
                         :icon :gear-a
                         :type :secondary}
@@ -24,15 +27,12 @@
   (mixins/dispatch-on-mount
     (fn [_ _ {:keys [id]} {:keys [token]}]
       {:profile [:load-profile id token]}))
-  {:will-unmount
-   (fn [{[r] :rum/args :as state}]
-     (citrus/dispatch! r :profile :init)
-     state)}
   [r route params current-user]
-  (let [{{:keys [image username bio following]} :profile profile :profile loading? :loading?}
-        (rum/react (citrus/subscription r [:profile]))
-        on-follow #(citrus/dispatch! r :profile :follow username (:token current-user) {:dispatch [:profile :update]})
-        on-unfollow #(citrus/dispatch! r :profile :unfollow username (:token current-user) {:dispatch [:profile :update]})]
+  (let [{:keys [profile loading?]} (rum/react (citrus/subscription r [:profile]))
+        {:keys [image username bio following]} profile
+        user-token (:token current-user)
+        on-follow #(citrus/dispatch! r :profile :follow username user-token {:dispatch [:profile :update]})
+        on-unfollow #(citrus/dispatch! r :profile :unfollow username user-token {:dispatch [:profile :update]})]
     (when (and profile (not loading?))
       [:.profile-page
        [:.user-info

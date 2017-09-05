@@ -26,7 +26,10 @@
           {:username  username
            :createdAt createdAt
            :image     image}
-          (base/FollowButton username following? on-follow on-unfollow)
+          (base/FollowButton {:username username
+                              :following? following?
+                              :on-follow on-follow
+                              :on-unfollow on-unfollow})
           [:span "  "]
           (base/Button
             {:icon     :heart
@@ -49,7 +52,10 @@
        {:username  username
         :createdAt createdAt
         :image     image}
-       (base/FollowButton username following? on-follow on-unfollow)
+       (base/FollowButton {:username username
+                           :following? following?
+                           :on-follow on-follow
+                           :on-unfollow on-unfollow})
        [:span "  "]
        (base/Button
          {:icon     :heart

@@ -15,12 +15,12 @@
   {:state state})
 
 (defmethod control :load-profile [_ [id token] state]
-  {:state (assoc state :loadings? true)
-   :http (into {:endpoint :profile
-                :slug     id
-                :on-load  :load-profile-ready
-                :on-error :load-profile-error}
-               (when token {:token token}))})
+  {:state (assoc state :loading? true)
+   :http {:endpoint :profile
+          :slug     id
+          :on-load  :load-profile-ready
+          :on-error :load-profile-error
+          :token    token}})
 
 (defmethod control :load-profile-ready [_ [{profile :profile}] state]
   {:state (assoc state
