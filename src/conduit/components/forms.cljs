@@ -21,26 +21,31 @@
              (cstr/join ", " v)
              v))])])
 
+(defn- form-field-control [field-type input-type size attrs]
+  (let [tag   (or field-type :input)
+        class (-> ["form-control"]
+                  (#(if-not (= :normal size) (conj % "form-control-lg") %)))
+        attrs (merge {:class class
+                      :type  (when (= :input tag) (or input-type :text))
+                      :rows  (when (= :textarea tag) 8)}
+                     attrs)]
+    [tag attrs]))
+
 (rum/defc InputField
-  [{:keys [placeholder type value errors on-blur on-focus on-change field-type]}]
-  (let [input-field (case field-type
-                :textarea (fn [attrs & children]
-                            (apply vector :textarea.form-control.form-control-lg (assoc attrs :rows 8) children))
-                (fn [& children] (apply vector :input.form-control.form-control-lg children)))]
-    [:fieldset.form-group
-     (input-field
-      {:placeholder placeholder
-       :on-change #(on-change (.. % -target -value))
-       :on-blur on-blur
-       :on-focus on-focus
-       :type (or type :text)
-       :value value})
-     (when errors
-       (InputErrors errors))]))
+  [{:keys [placeholder input-type value errors on-blur on-focus on-change field-type size]}]
+  [:fieldset.form-group
+   (form-field-control field-type input-type size
+    {:placeholder placeholder
+     :on-change #(on-change (.. % -target -value))
+     :on-blur on-blur
+     :on-focus on-focus
+     :value value})
+   (when errors
+     (InputErrors errors))])
 
 (def login-form
   {:fields {:email {:placeholder "Email"}
-            :password {:placeholder "Password" :type "password"}}
+            :password {:placeholder "Password" :input-type "password"}}
    :validators {:email [[#(not (empty? %)) "Please enter email"]
                         [form-helper/email? "Invalid Email"]]
                 :password [[#(not (empty? %)) "Please enter password"]]}
@@ -53,7 +58,7 @@
 (def register-form
   {:fields {:username {:placeholder "Username"}
              :email {:placeholder "Email"}
-             :password {:placeholder "Password" :type "password"}}
+             :password {:placeholder "Password" :input-type "password"}}
    :validators {:username [[#(not (empty? %)) "Please enter username"]]
                 :email [[#(not (empty? %)) "Please enter email"]
                         [form-helper/email? "Invalid Email"]]
@@ -67,24 +72,24 @@
                                                      :password password})))})
 
 (def settings-form
-  {:fields {:image {:placeholder "URL of profile picture"}
+  {:fields {:image {:placeholder "URL of profile picture" :size :normal}
             :username {:placeholder "Username"}
             :bio {:placeholder "Short bio about you" :field-type :textarea}
             :email {:placeholder "Email"}
-            :password {:placeholder "New Password" :type "password"}}
+            :password {:placeholder "New Password" :input-type "password"}}
    :validators {:username [[#(not (empty? %)) "Please enter username"]]
                 :email [[#(not (empty? %)) "Please enter email"]
                         [form-helper/email? "Invalid Email"]]}
    :on-init
    (fn [fields {[_ _ _ current-user] :rum/args}]
-     {:data (into {} (for [field-key fields] {field-key (get current-user field-key)}))})
+     {:data (into {} (for [field-key fields] {field-key (or (get current-user field-key) "")}))})
    :on-submit
    (fn [reconciler data errors validators]
      (let [{:keys [username email password image bio]} data]
        (citrus/dispatch! reconciler :user :update-settings
                          {:username username
                           :email    email
-                          :password password
+                          :password (when-not (empty? password) password)
                           :image    image
                           :bio      bio})))})
 
@@ -107,12 +112,12 @@
                          (comp on-submit with-prevent-default))}
      (when server-errors
        (ServerErrors server-errors))
-     (for [[key {:keys [placeholder type]}] fields]
+     (for [[key {:keys [placeholder input-type]}] fields]
        (let [value (get data key)]
          (rum/with-key
            (InputField
              {:placeholder placeholder
-              :type type
+              :input-type input-type
               :errors (-> (get errors key) seq)
               :on-blur #(validate key value)
               :on-focus #(on-focus key)
@@ -143,12 +148,12 @@
                          (comp on-submit with-prevent-default))}
      (when server-errors
        (ServerErrors server-errors))
-     (for [[key {:keys [placeholder type]}] fields]
+     (for [[key {:keys [placeholder input-type]}] fields]
        (let [value (get data key)]
          (rum/with-key
            (InputField
              {:placeholder placeholder
-              :type type
+              :input-type input-type
               :errors (-> (get errors key) seq)
               :on-blur #(validate key value)
               :on-focus #(on-focus key)
@@ -172,21 +177,21 @@
      state)}
   [state r _ _ current-user]
   (let [{{:keys [fields data errors on-submit on-change on-focus validate]} ::mixins/form} state
-        loading? (rum/react (citrus/subscription r [:user :loading?]))
-        server-errors (rum/react (citrus/subscription r [:user :errors]))
+        [loading? server-errors] (rum/react (citrus/subscription r [:user] #(vector (:loading? %) (:errors %))))
         has-errors? (->> errors vals (apply concat) (every? nil?) not)
         disabled? (or has-errors? loading?)]
     [:form.clearfix {:on-submit (when-not has-errors?
                          (comp on-submit with-prevent-default))}
      (when server-errors
        (ServerErrors server-errors))
-     (for [[key {:keys [placeholder type field-type]}] fields]
+     (for [[key {:keys [placeholder input-type field-type size]}] fields]
        (let [value (get data key)]
          (rum/with-key
            (InputField
              {:placeholder placeholder
-              :type type
+              :input-type input-type
               :field-type field-type
+              :size size
               :errors (-> (get errors key) seq)
               :on-blur #(validate key value)
               :on-focus #(on-focus key)

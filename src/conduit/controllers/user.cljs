@@ -69,14 +69,10 @@
 (defmethod control :load-user-success [_ [{:keys [user]}] state]
   {:state (assoc state :current-user user :loading? false)})
 
-(defmethod control :update-settings [_ [{:keys [username email password image bio]}] state]
+(defmethod control :update-settings [_ [data] state]
   {:state (assoc state :loading? true)
    :http  {:endpoint :user
-           :params   {:user {:username username
-                             :email email
-                             :password password
-                             :image image
-                             :bio bio}}
+           :params   {:user data}
            :method   :put
            :token    (:token state)
            :on-load  :update-settings-success
