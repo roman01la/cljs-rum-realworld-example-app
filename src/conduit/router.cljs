@@ -16,4 +16,4 @@
 
 
 (defn stop! [handler]
-  (events/unlisten js/window "hashcange" handler))
+  (events/unlisten js/window "hashchange" handler))
