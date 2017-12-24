@@ -125,7 +125,11 @@
   (let [{{:keys [fields data errors on-submit on-change on-focus validate]} ::mixins/form} state
         server-errors (rum/react (citrus/subscription r [:user :errors]))
         has-errors? (->> errors vals (apply concat) (every? nil?) not)
-        disabled? (or has-errors? (->> fields vals (map :touched?) (every? nil?)))]
+        loading? (rum/react (citrus/subscription r [:user :loading?]))
+        disabled? (or has-errors?
+                      loading?
+                      (not (->> fields vals (map #(contains? % :touched?)) (every? true?)))
+                      (->> fields vals (map :touched?) (every? nil?)))]
     [:form {:on-submit (when-not has-errors?
                          (comp on-submit with-prevent-default))}
      (when server-errors
@@ -161,7 +165,11 @@
   (let [{{:keys [fields data errors on-submit on-change on-focus validate]} ::mixins/form} state
         server-errors (rum/react (citrus/subscription r [:user :errors]))
         has-errors? (->> errors vals (apply concat) (every? nil?) not)
-        disabled? (or has-errors? (->> fields vals (map :touched?) (every? nil?)))]
+        loading? (rum/react (citrus/subscription r [:user :loading?]))
+        disabled? (or has-errors?
+                      loading?
+                      (not (->> fields vals (map #(contains? % :touched?)) (every? true?)))
+                      (->> fields vals (map :touched?) (every? nil?)))]
     [:form {:on-submit (when-not has-errors?
                          (comp on-submit with-prevent-default))}
      (when server-errors
