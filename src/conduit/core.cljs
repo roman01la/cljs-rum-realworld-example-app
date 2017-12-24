@@ -18,7 +18,9 @@
 
 (def routes
   ["/" [["" :home]
-        [["tag/" :id] :tag]
+        [["page/" :page] :home]
+        [["tag/" :id] [["" :tag]
+                       [["/page/" :page] :tag]]]
         [["article/" :id] :article]
         ["editor" [["" :editor]
                    [["/" :slug] :editor]]]

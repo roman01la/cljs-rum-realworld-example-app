@@ -1,7 +1,9 @@
 (ns conduit.components.home
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
+            [bidi.bidi :as bidi]
             [conduit.mixins :as mixins]
+            [conduit.core :refer [routes]]
             [conduit.components.grid :as grid]
             [conduit.components.base :as base]))
 
@@ -67,20 +69,18 @@
     (map #(rum/with-key (TagItem %) %) tags)]])
 
 
-(rum/defc PageItem [label page slug]
-  [:li.page-item
-   (when (= label page)
-     {:class "active"})
-   [:a.page-link
-    (if slug
-      {:href (str "/" slug "/" label)}
-      {:href (str "/" label)})
-    label]])
+(rum/defc PageItem [page route current-page slug]
+  (let [path (apply bidi/path-for (into [routes route] (when slug [:id slug])))]
+    [:li.page-item
+     (when (= (if (not= js/isNaN current-page) current-page 1) page)
+       {:class "active"})
+     [:a.page-link {:href (str "#" (if (= "/" path) "" path) "/page/" page)}
+      page]]))
 
-(rum/defc Pagination [{:keys [page pages-count slug]}]
+(rum/defc Pagination [{:keys [route page pages-count slug]}]
   (when-not (zero? pages-count)
     [:nav {}
-     (map #(rum/with-key (PageItem % page slug) %)
+     (map #(rum/with-key (PageItem % route (-> page (or 1) js/parseInt) slug) %)
           (range 1 (inc pages-count)))]))
 
 
@@ -106,13 +106,14 @@
 
 
 (rum/defc -Home < rum/static
-  [r {:keys [articles loading? pages-count page]} tags id]
+  [r route page {:keys [articles loading? pages-count]} tags id]
   (Layout r {:articles articles
              :loading? loading?
              :pagination
                        {:pages-count pages-count
                         :page        page
-                        :slug        id}
+                        :slug        id
+                        :route       route}
              :tags     tags
              :tabs
                        [{:label   "Your Feed"
@@ -129,22 +130,22 @@
 (rum/defc Home <
   rum/reactive
   (mixins/dispatch-on-mount
-    (fn []
+    (fn [_ _ {:keys [page]}]
       {:tag-articles [:reset]
-       :articles     [:load]
+       :articles     [:load {:page page}]
        :tags         [:load]}))
-  [r route params]
+  [r route {:keys [page]}]
   (let [articles (rum/react (citrus/subscription r [:articles]))
         tags (rum/react (citrus/subscription r [:tags]))]
-    (-Home r articles tags nil)))
+    (-Home r route page articles tags nil)))
 
 (rum/defc HomeTag <
   rum/reactive
   (mixins/dispatch-on-mount
-    (fn [_ _ {:keys [id]}]
-      {:tag-articles [:load {:tag id}]
+    (fn [_ _ {:keys [id page]}]
+      {:tag-articles [:load {:tag id :page page}]
        :tags         [:load]}))
-  [r route {:keys [id]}]
+  [r route {:keys [id page]}]
   (let [tag-articles (rum/react (citrus/subscription r [:tag-articles]))
         tags (rum/react (citrus/subscription r [:tags]))]
-    (-Home r tag-articles tags id)))
+    (-Home r route page tag-articles tags id)))
