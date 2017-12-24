@@ -20,6 +20,8 @@
   ["/" [["" :home]
         [["tag/" :id] :tag]
         [["article/" :id] :article]
+        ["editor" [["" :editor]
+                   [["/" :slug] :editor]]]
         ["login" :login]
         ["register" :register]]])
 
