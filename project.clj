@@ -40,6 +40,7 @@
                            :pretty-print false}}]}
 
   :figwheel {:css-dirs ["resources/public/css"]
+             :server-port 3000
              :ring-handler server/handler}
 
   :profiles {:dev {:dependencies [[binaryage/devtools "0.9.4"]
