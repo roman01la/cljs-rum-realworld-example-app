@@ -29,8 +29,10 @@
 
 (defmethod local-storage :get [r c {:keys [id on-success on-error]}]
   (if-let [token (.getItem js/localStorage id)]
-    (dispatch! r c on-success token)
-    (dispatch! r c on-error)))
+    (when on-success
+      (dispatch! r c on-success token))
+    (when on-error
+      (dispatch! r c on-error))))
 
 (defmethod local-storage :set [_ _ {:keys [id value]}]
   (.setItem js/localStorage id value))
