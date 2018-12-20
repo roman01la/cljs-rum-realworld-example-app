@@ -39,9 +39,10 @@
                           {}))
         fields (atom fields-init)]
     {:will-mount
-     (fn [{[r] :rum/args
+     (fn [{[r _ _ current-values] :rum/args
            comp :rum/react-component
            :as state}]
+       (when current-values (reset! data (into {} (for [[k v] @data] {k (get current-values k)}))))
        (add-watch data ::form-data (fn [_ _ old-state next-state]
                                      (when-not (= old-state next-state)
                                        (rum/request-render comp))))
