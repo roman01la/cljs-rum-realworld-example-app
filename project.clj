@@ -6,16 +6,16 @@
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.908"]
-                 [rum "0.10.8"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.439"]
+                 [rum "0.11.2"]
                  [org.roman01la/citrus "3.0.0"]
                  [bidi "2.1.2"]
                  [funcool/promesa "1.9.0"]
                  [funcool/httpurr "1.0.0"]
                  [markdown-clj "1.0.1"]]
 
-  :plugins [[lein-figwheel "0.5.13"]
+  :plugins [[lein-figwheel "0.5.17"]
             [lein-cljsbuild "1.1.7" :exclusions [[org.clojure/clojure]]]]
 
   :source-paths ["src"]
@@ -43,7 +43,7 @@
              :ring-handler server/handler}
 
   :profiles {:dev {:dependencies [[binaryage/devtools "0.9.4"]
-                                  [figwheel-sidecar "0.5.13"]
+                                  [figwheel-sidecar "0.5.17"]
                                   [com.cemerick/piggieback "0.2.1"]
                                   [ring "1.5.1"]
                                   [ring/ring-defaults "0.2.1"]
