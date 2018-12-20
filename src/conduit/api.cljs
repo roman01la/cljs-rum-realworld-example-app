@@ -1,6 +1,5 @@
 (ns conduit.api
-  (:require [citrus.core :as citrus]
-            [httpurr.client.xhr :as xhr]
+  (:require [httpurr.client.xhr :as xhr]
             [httpurr.status :as status]
             [promesa.core :as p]))
 

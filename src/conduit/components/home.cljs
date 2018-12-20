@@ -1,9 +1,8 @@
 (ns conduit.components.home
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
-            [bidi.bidi :as bidi]
             [conduit.mixins :as mixins]
-            [conduit.core :refer [routes]]
+            [conduit.routes :refer [routes]]
             [conduit.components.grid :as grid]
             [conduit.components.base :as base]))
 

@@ -2,6 +2,7 @@
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
             [goog.dom :as dom]
+            [conduit.routes :refer [routes]]
             [conduit.effects :as effects]
             [conduit.router :as router]
             [conduit.controllers.articles :as articles]
@@ -13,19 +14,7 @@
             [conduit.controllers.user :as user]
             [conduit.controllers.profile :as profile]
             [conduit.components.root :refer [Root]]
-            [conduit.components.home :as home]
             [conduit.components.article :refer [Article]]))
-
-(def routes
-  ["/" [["" :home]
-        [["page/" :page] :home]
-        [["tag/" :id] [["" :tag]
-                       [["/page/" :page] :tag]]]
-        [["article/" :id] :article]
-        ["editor" [["" :editor]
-                   [["/" :slug] :editor]]]
-        ["login" :login]
-        ["register" :register]]])
 
 ;; create Reconciler instance
 (defonce reconciler
