@@ -9,4 +9,5 @@
         ["editor" [["" :editor]
                    [["/" :slug] :editor]]]
         ["login" :login]
-        ["register" :register]]])
+        ["register" :register]
+        ["settings" :settings]]])

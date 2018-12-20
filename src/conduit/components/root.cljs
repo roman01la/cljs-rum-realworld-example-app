@@ -7,6 +7,7 @@
             [conduit.components.login :as login]
             [conduit.components.register :as register]
             [conduit.components.editor :as editor]
+            [conduit.components.settings :as settings]
             [conduit.components.header :refer [Header]]
             [conduit.components.footer :refer [Footer]]))
 
@@ -27,5 +28,6 @@
        :login (login/Login r route params)
        :register (register/Register r route params)
        :editor (editor/Editor r route params)
+       :settings (settings/Settings r route params)
        [:div "404"])
      (Footer)]))
