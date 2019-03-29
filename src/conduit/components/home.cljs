@@ -42,10 +42,13 @@
         on-favorite #(citrus/dispatch! r :articles :favorite slug token {:dispatch [:tag-articles :update slug :article]})
         on-unfavorite #(citrus/dispatch! r :articles :unfavorite slug token {:dispatch [:tag-articles :update slug :article]})]
     [:div.article-preview
+     ;; TODO console error -> Each child in an array or iterator should have a unique "key" prop.
+     ;; TODO -> Check the render method of `ArticleMeta`. It was passed a child from ArticlePreview
      (base/ArticleMeta
        {:username  username
         :createdAt createdAt
         :image     image}
+       ;; TODO like button does something strange: redirecting to another page
        (base/Button
          {:icon     :heart
           :class    "pull-xs-right"
@@ -77,8 +80,10 @@
 (rum/defc PageItem [page route current-page slug]
   (let [path (apply bidi/path-for (into [routes route] (when slug [:id slug])))]
     [:li.page-item
+     ;; TODO refactor this sausage :)
      (when (= (if (not= js/isNaN current-page) current-page 1) page)
        {:class "active"})
+     ;; TODO do something with links
      [:a.page-link {:href (str "#" (if (= "/" path) "" path) "/page/" page)}
       page]]))
 
