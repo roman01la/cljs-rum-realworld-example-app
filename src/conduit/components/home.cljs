@@ -36,6 +36,9 @@
   [r {:keys [author createdAt favoritesCount title description slug tagList favorited]}]
   (let [{:keys [image username]} author
         token (rum/react (citrus/subscription r [:user :token]))
+        ;; TODO here we have parameter slug, in controllers we have id in :favorite and :unforite
+        ;; TODO wtf is tag-articles?
+        ;; TODO it looks like we are trying to update tag-articles, why?
         on-favorite #(citrus/dispatch! r :articles :favorite slug token {:dispatch [:tag-articles :update slug :article]})
         on-unfavorite #(citrus/dispatch! r :articles :unfavorite slug token {:dispatch [:tag-articles :update slug :article]})]
     [:div.article-preview
@@ -46,13 +49,15 @@
        (base/Button
          {:icon     :heart
           :class    "pull-xs-right"
-          :on-click (if favorited on-unfavorite on-favorite)}
+          :on-click (if favorited on-unfavorite on-favorite)
+          :outline? (not favorited)}
          favoritesCount))
      [:main
       [:a.preview-link {:href (str "#/article/" slug)}
        [:h1 title]
        [:p description]]]
      [:div.article-footer
+      ;; TODO why urls are hardcoded?
       [:a.preview-link {:href (str "#/article/" slug)}
        [:span "Read more..."]]
       (base/Tags tagList)]]))
@@ -104,7 +109,7 @@
    (Banner)
    (Page r data)])
 
-
+;; TODO how to enable adequate tooling? cljs-devtools
 (rum/defc -Home < rum/static
   [r route page {:keys [articles loading? pages-count]} tags id]
   (Layout r {:articles articles
@@ -127,6 +132,7 @@
                            :icon    "ion-pound"
                            :active? true})]}))
 
+;; TODO: do smth with naming: articles = articles + meta in Home, articles = articles in -Home
 (rum/defc Home <
   rum/reactive
   (mixins/dispatch-on-mount

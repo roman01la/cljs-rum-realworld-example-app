@@ -27,6 +27,7 @@
        (assoc :pages-count (-> articlesCount (/ 10) Math/round))
        (assoc :loading? false))})
 
+;; TODO why we have the same effect both for sucess and failure?
 (defmethod control :favorite [_ [id token callback]]
   {:http {:endpoint :favorite
           :slug     id
@@ -41,6 +42,7 @@
 (defmethod control :favorite-error [_ _ state]
   {:state state})
 
+;; TODO why we have the same effect both for sucess and failure?
 (defmethod control :unfavorite [_ [id token callback]]
   {:http {:endpoint :favorite
           :slug     id
