@@ -1,9 +1,9 @@
 (ns conduit.controllers.tag-articles)
 
 (def initial-state
-  {:articles []
+  {:articles    []
    :pages-count 0
-   :loading? true})
+   :loading?    true})
 
 (defmulti control (fn [event] event))
 
@@ -16,10 +16,10 @@
 (defmethod control :load [_ [{:keys [tag page]}] state]
   {:state (assoc state :loading? true)
    :http  {:endpoint :articles
-           :params {:tag tag
-                    :limit 10
-                    :offset (* (-> page (or 1) js/parseInt dec) 10)}
-           :on-load :load-ready}})
+           :params   {:tag    tag
+                      :limit  10
+                      :offset (* (-> page (or 1) js/parseInt dec) 10)}
+           :on-load  :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [articles articlesCount]}] state]
   {:state

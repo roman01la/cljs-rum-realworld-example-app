@@ -7,7 +7,7 @@
    [:div.card-block
     [:textarea.form-control
      {:placeholder "Write a comment..."
-      :rows 3}]]
+      :rows        3}]]
    [:div.card-footer
     [:img.comment-author-img {:src ""}]
     (base/Button "Post Comment")]])

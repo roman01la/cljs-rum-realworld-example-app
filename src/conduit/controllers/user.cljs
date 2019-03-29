@@ -24,10 +24,10 @@
            :on-error :form-submit-error}})
 
 (defmethod control :login-success [_ [{user :user {token :token} :user}] state]
-  {:state         (assoc state :token        token
+  {:state         (assoc state :token token
                                :current-user user
-                               :errors       nil
-                               :loading?     false)
+                               :errors nil
+                               :loading? false)
    :local-storage {:action :set
                    :id     "jwt-token"
                    :value  token}
@@ -44,10 +44,10 @@
 
 (defmethod control :register-success [_ [{user :user {token :token} :user}] state]
   {:state         (assoc state
-                         :token        token
-                         :current-user user
-                         :errors       nil
-                         :loading?     false)
+                    :token token
+                    :current-user user
+                    :errors nil
+                    :loading? false)
    :local-storage {:action :set
                    :id     "jwt-token"
                    :value  token}
@@ -55,8 +55,8 @@
 
 (defmethod control :form-submit-error [_ [{errors :errors}] state]
   {:state (assoc state
-                 :errors   errors
-                 :loading? false)})
+            :errors errors
+            :loading? false)})
 
 (defmethod control :clear-errors [_ _ state]
   {:state (assoc state :errors nil)})
@@ -80,10 +80,10 @@
   {:state (assoc state :loading? true)
    :http  {:endpoint :user
            :params   {:user {:username username
-                             :email email
+                             :email    email
                              :password password
-                             :image image
-                             :bio bio}}
+                             :image    image
+                             :bio      bio}}
            :method   :put
            :token    (:token state)
            :on-load  :update-settings-success
@@ -91,8 +91,8 @@
 
 (defmethod control :update-settings-success [_ [{user :user}] state]
   {:state    (assoc state :current-user user
-                          :errors       nil
-                          :loading?     false)
+                          :errors nil
+                          :loading? false)
    :redirect ""})
 
 (defmethod control :logout []

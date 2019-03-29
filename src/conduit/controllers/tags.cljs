@@ -13,7 +13,7 @@
 
 (defmethod control :load [_ _ state]
   {:http {:endpoint :tags
-          :on-load :load-ready}})
+          :on-load  :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [tags]}]]
   {:state tags})

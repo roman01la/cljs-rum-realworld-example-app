@@ -16,8 +16,8 @@
 (defmethod control :load [_ [{:keys [page]}] state]
   {:state (assoc state :loading? true)
    :http  {:endpoint :articles
-           :params {:limit 10
-                    :offset (* (-> page (or 1) js/parseInt dec) 10)}
+           :params   {:limit  10
+                      :offset (* (-> page (or 1) js/parseInt dec) 10)}
            :on-load  :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [articles articlesCount]}] state]

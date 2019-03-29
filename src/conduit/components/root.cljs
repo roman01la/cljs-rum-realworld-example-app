@@ -12,14 +12,14 @@
             [conduit.components.footer :refer [Footer]]))
 
 (rum/defc Root < rum/reactive
-  (mixins/dispatch-on-mount
-   (fn [] {:user [:check-auth]}))
+                 (mixins/dispatch-on-mount
+                   (fn [] {:user [:check-auth]}))
   [r]
   (let [{route :handler params :route-params}
         (rum/react (citrus/subscription r [:router]))
         {:keys [current-user loading?]} (rum/react (citrus/subscription r [:user]))]
     [:div
-     (Header r route {:loading? loading?
+     (Header r route {:loading?   loading?
                       :logged-in? current-user})
      (case route
        :home (home/Home r route params)

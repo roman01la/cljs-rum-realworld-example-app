@@ -2,27 +2,27 @@
   (:require [rum.core :as rum]))
 
 (def nav-items
-  [{:label "Home"
-    :route :home
-    :link "/"
+  [{:label       "Home"
+    :route       :home
+    :link        "/"
     :display-for :always}
-   {:label "New Post"
-    :route :editor
-    :icon "ion-compose"
-    :link "/editor"
+   {:label       "New Post"
+    :route       :editor
+    :icon        "ion-compose"
+    :link        "/editor"
     :display-for :logged}
-   {:label "Settings"
-    :route :settings
-    :icon "ion-gear-a"
-    :link "/settings"
+   {:label       "Settings"
+    :route       :settings
+    :icon        "ion-gear-a"
+    :link        "/settings"
     :display-for :logged}
-   {:label "Sign in"
-    :route :login
-    :link "/login"
+   {:label       "Sign in"
+    :route       :login
+    :link        "/login"
     :display-for :non-logged}
-   {:label "Sign up"
-    :route :sign-up
-    :link "/register"
+   {:label       "Sign up"
+    :route       :sign-up
+    :link        "/register"
     :display-for :non-logged}])
 
 (rum/defc NavItem [curr-route {:keys [label icon route link]}]
