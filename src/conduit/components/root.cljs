@@ -15,8 +15,7 @@
                  (mixins/dispatch-on-mount
                    (fn [] {:user [:check-auth]}))
   [r]
-  (let [{route :handler params :route-params}
-        (rum/react (citrus/subscription r [:router]))
+  (let [{route :handler params :route-params} (rum/react (citrus/subscription r [:router]))
         {:keys [current-user loading?]} (rum/react (citrus/subscription r [:user]))]
     [:div
      (Header r route {:loading?   loading?
