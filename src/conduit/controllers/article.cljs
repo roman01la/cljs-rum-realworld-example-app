@@ -11,6 +11,7 @@
 (defmethod control :init []
   {:state initial-state})
 
+;; TODO: really strange, how :on-load works exactly?
 (defmethod control :load [_ [{:keys [id]}]]
   {:state {:loading? true}
    :http  {:endpoint :article
