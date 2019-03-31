@@ -65,6 +65,7 @@
   {:state         state
    :local-storage {:action     :get
                    :id         "jwt-token"
+                   ;; TODO add on-error handler to redirect to home page and probably set some error
                    :on-success :load-user}})
 
 (defmethod control :load-user [_ [token] state]
