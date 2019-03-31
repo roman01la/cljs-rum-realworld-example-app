@@ -47,5 +47,6 @@
                           :loading? false)
    :redirect (str "article/" (:slug article))})
 
+;; TODO change loading status
 (defmethod control :save-error [_ [{errors :errors}] state]
   {:state (assoc state :errors errors)})
