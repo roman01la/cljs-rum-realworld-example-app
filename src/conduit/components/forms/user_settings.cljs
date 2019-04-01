@@ -21,7 +21,7 @@
                 :password [[form-helper/present? "Please enter password"]
                            [(form-helper/length? {:min 8}) "Password is too short (minimum is 8 characters)"]]}
    :on-submit
-               (fn [reconciler data errors validators [token id]]
+               (fn [reconciler data]
                  (let [{:keys [image username bio email password]} data]
                    (citrus/dispatch! reconciler :user :update-settings
                                      {:image    image
@@ -42,12 +42,11 @@
                              state)}
   [state r _ _ _]
   (let [{{:keys [fields data errors on-submit on-change on-focus validate has-errors? pristine?]} ::mixins/form} state
-        token (rum/react (citrus/subscription r [:user :token]))
         loading? (rum/react (citrus/subscription r [:user :loading?]))
         server-errors (rum/react (citrus/subscription r [:user :errors]))
         disabled? (or has-errors? pristine? loading?)]
     [:form {:on-submit (when-not has-errors?
-                         (comp on-submit (fn [] [token]) with-prevent-default))}
+                         (comp on-submit with-prevent-default))}
      [:fieldset
       (when server-errors
         (ServerErrors server-errors))
