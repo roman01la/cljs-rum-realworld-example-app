@@ -36,6 +36,10 @@
 
 (rum/defcs UserSettings < rum/reactive
                           (mixins/form user-settings-form)
+                          {:will-unmount
+                           (fn [{[r] :rum/args :as state}]
+                             (citrus/dispatch! r :user :clear-errors)
+                             state)}
   [state r _ _ _]
   (let [{{:keys [fields data errors on-submit on-change on-focus validate has-errors? pristine?]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
