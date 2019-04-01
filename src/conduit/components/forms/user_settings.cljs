@@ -3,7 +3,8 @@
             [citrus.core :as citrus]
             [conduit.mixins :as mixins]
             [conduit.components.base :as base]
-            [conduit.components.forms :refer [InputField TextareaField ServerErrors with-prevent-default]]))
+            [conduit.components.forms :refer [InputField TextareaField ServerErrors with-prevent-default]]
+            [conduit.helpers.form :as form-helper]))
 
 (def user-settings-form
   {:fields     {:image    {:placeholder "URL of profile picture"}
@@ -14,10 +15,11 @@
                            :type        "email"}
                 :password {:placeholder "Password"
                            :type        "password"}}
-   ;; TODO add email validation
-   :validators {:username [[#(not (empty? %)) "Shouldn't be blank"]]
-                :password [[#(not (empty? %)) "Shouldn't be blank"]]
-                :email    [[#(not (empty? %)) "Shouldn't be blank"]]}
+   :validators {:username [[form-helper/present? "Please enter username"]]
+                :email    [[form-helper/present? "Please enter email"]
+                           [form-helper/email? "Invalid Email"]]
+                :password [[form-helper/present? "Please enter password"]
+                           [(form-helper/length? {:min 8}) "Password is too short (minimum is 8 characters)"]]}
    :on-submit
                (fn [reconciler data errors validators [token id]]
                  (let [{:keys [image username bio email password]} data]
