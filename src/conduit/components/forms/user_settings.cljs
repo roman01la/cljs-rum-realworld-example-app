@@ -36,7 +36,7 @@
 
 (rum/defcs UserSettings < rum/reactive
                           (mixins/form user-settings-form)
-  [state r _ _]
+  [state r _ _ _]
   ;; TODO: why ::mixins/form and not ::form?
   (let [{{:keys [fields data errors on-submit on-change on-focus validate]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
