@@ -31,8 +31,7 @@
                                       :password password})))})
 
 (def get-field
-  {
-   :input    InputField
+  {:input    InputField
    :textarea TextareaField})
 
 (rum/defcs UserSettings < rum/reactive
