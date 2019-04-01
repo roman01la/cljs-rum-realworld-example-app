@@ -68,6 +68,7 @@
                    ;; TODO add on-error handler to redirect to home page and probably set some error
                    :on-success :load-user}})
 
+;; TODO add on-error handler
 (defmethod control :load-user [_ [token] state]
   {:state (assoc state :token token :loading? true)
    :http  {:endpoint :user
@@ -75,7 +76,9 @@
            :on-load  :load-user-success}})
 
 (defmethod control :load-user-success [_ [{:keys [user]}] state]
-  {:state (assoc state :current-user user :loading? false)})
+  {:state (assoc state
+            :current-user user
+            :loading? false)})
 
 (defmethod control :update-settings [_ [{:keys [username email password image bio]}] state]
   {:state (assoc state :loading? true)
