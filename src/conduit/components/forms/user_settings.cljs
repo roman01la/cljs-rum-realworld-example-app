@@ -43,8 +43,9 @@
   [state r _ _ _]
   (let [{{:keys [fields data errors on-submit on-change on-focus validate has-errors? pristine?]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
+        loading? (rum/react (citrus/subscription r [:user :loading?]))
         server-errors (rum/react (citrus/subscription r [:user :errors]))
-        disabled? (or has-errors? pristine?)]
+        disabled? (or has-errors? pristine? loading?)]
     [:form {:on-submit (when-not has-errors?
                          (comp on-submit (fn [] [token]) with-prevent-default))}
      [:fieldset
