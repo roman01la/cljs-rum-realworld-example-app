@@ -1,7 +1,7 @@
 (ns conduit.components.settings
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
-            [conduit.components.forms :refer [UserSettings]]))
+            [conduit.components.forms.user-settings :refer [UserSettings]]))
 
 (rum/defc Settings < rum/reactive
   [r route params]
