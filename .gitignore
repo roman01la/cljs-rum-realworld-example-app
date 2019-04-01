@@ -15,3 +15,5 @@ pom.xml
 conduit.iml
 node_modules
 *.iml
+
+\.rebel_readline_history
