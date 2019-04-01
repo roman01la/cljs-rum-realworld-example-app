@@ -37,7 +37,9 @@
                                                          (into {} (for [[evt-name evt-fn] (:events %)]
                                                                     {evt-name (evt-fn data errors k)}))) %)))))
                            {}))
-        fields (atom fields-init)]
+        fields (atom fields-init)
+        has-errors? (->> @errors vals (apply concat) (every? nil?) not)
+        pristine? (->> @fields vals (map :touched?) (every? nil?))]
     {:will-mount
      (fn [{[r _ _ current-values] :rum/args
            comp                   :rum/react-component
@@ -63,12 +65,14 @@
      (fn [render-fn]
        (fn [{[r] :rum/args :as state}]
          (let [state
-               (assoc state ::form {:fields     @fields
-                                    :validators validators
-                                    :validate   #(swap! errors assoc %1 (check-errors (get validators %1) %2))
-                                    :on-change  #(swap! data assoc %1 %2)
-                                    :on-submit  #(on-submit r @data @errors validators %)
-                                    :on-focus   #(swap! fields assoc-in [% :touched?] true)
-                                    :data       @data
-                                    :errors     @errors})]
+               (assoc state ::form {:fields      @fields
+                                    :validators  validators
+                                    :validate    #(swap! errors assoc %1 (check-errors (get validators %1) %2))
+                                    :on-change   #(swap! data assoc %1 %2)
+                                    :on-submit   #(on-submit r @data @errors validators %)
+                                    :on-focus    #(swap! fields assoc-in [% :touched?] true)
+                                    :data        @data
+                                    :errors      @errors
+                                    :has-errors? has-errors?
+                                    :pristine    pristine?})]
            (render-fn state))))}))

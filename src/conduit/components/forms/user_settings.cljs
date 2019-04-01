@@ -37,13 +37,10 @@
 (rum/defcs UserSettings < rum/reactive
                           (mixins/form user-settings-form)
   [state r _ _ _]
-  ;; TODO: why ::mixins/form and not ::form?
-  (let [{{:keys [fields data errors on-submit on-change on-focus validate]} ::mixins/form} state
+  (let [{{:keys [fields data errors on-submit on-change on-focus validate has-errors? pristine?]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
         server-errors (rum/react (citrus/subscription r [:user :errors]))
-        ;; TODO why has-errors? and disabled? on this level?
-        has-errors? (->> errors vals (apply concat) (every? nil?) not)
-        disabled? (or has-errors? (->> fields vals (map :touched?) (every? nil?)))]
+        disabled? (or has-errors? pristine?)]
     [:form {:on-submit (when-not has-errors?
                          (comp on-submit (fn [] [token]) with-prevent-default))}
      [:fieldset
