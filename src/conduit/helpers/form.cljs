@@ -9,3 +9,6 @@
     (let [length (.-length v)]
       (and (if min (if (>= length min) true false) true)
            (if max (if (<= length max) true false) true)))))
+
+(defn present? [v]
+  (not (empty? v)))
