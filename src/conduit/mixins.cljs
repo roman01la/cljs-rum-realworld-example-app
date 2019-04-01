@@ -42,7 +42,8 @@
      (fn [{[r _ _ current-values] :rum/args
            comp                   :rum/react-component
            :as                    state}]
-       (when current-values (reset! data (into {} (for [[k v] @data] {k (get current-values k)}))))
+       (when current-values (reset! data (into {} (for [[k v] @data] {k (or (get current-values k)
+                                                                            v)}))))
        (add-watch data ::form-data (fn [_ _ old-state next-state]
                                      (when-not (= old-state next-state)
                                        (rum/request-render comp))))
