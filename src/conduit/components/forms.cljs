@@ -129,7 +129,7 @@
                                       :tagList     tagList}
                                      token)))})
 
-(defn- with-prevent-default [e]
+(defn with-prevent-default [e]
   (.preventDefault e)
   e)
 
