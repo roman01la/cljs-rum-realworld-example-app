@@ -50,4 +50,5 @@
    :redirect (str "article/" (:slug article))})
 
 (defmethod control :save-error [_ [{errors :errors}] state]
-  {:state (assoc state :errors errors)})
+  {:state (assoc state :errors errors
+                       :loading? false)})
