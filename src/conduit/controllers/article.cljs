@@ -1,7 +1,9 @@
 (ns conduit.controllers.article)
 
 (def initial-state
-  {:loading? false})
+  {:loading? false
+   :article  nil
+   :errors   nil})
 
 (defmulti control (fn [event] event))
 
