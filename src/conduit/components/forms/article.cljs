@@ -7,7 +7,8 @@
                                               TextareaField
                                               ServerErrors
                                               TagInputFieldContainer
-                                              with-prevent-default]]))
+                                              with-prevent-default]]
+            [conduit.helpers.form :as form-helper]))
 
 (defn- handleKeyDown [data errors key]
   #(when (= 13 (.-keyCode %))
@@ -35,8 +36,8 @@
                 :tag         {:placeholder "Enter tags"
                               :container   TagInputFieldContainer
                               :events      {:on-key-down handleKeyDown}}}
-   :validators {:title [[#(not (empty? %)) "Please enter title"]]
-                :body  [[#(not (empty? %)) "Please enter body"]]}
+   :validators {:title [[form-helper/present? "Please enter title"]]
+                :body  [[form-helper/present? "Please enter body"]]}
    :on-submit  handleSubmit})
 
 (rum/defcs ArticleForm < rum/reactive
