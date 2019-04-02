@@ -82,7 +82,7 @@
    (grid/Row
      (grid/Column
        "col-xs-12 col-md-8 offset-md-2"
-       (comment/Form)
+       (comment/Form r)
        (map comment/Comment comments)))])
 
 (rum/defc Article <
