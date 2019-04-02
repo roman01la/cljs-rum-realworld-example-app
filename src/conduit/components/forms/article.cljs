@@ -47,15 +47,10 @@
                             (citrus/dispatch! r :article :init)
                             state)}
   [state r _ _]
-  (let [{{:keys [fields data errors on-submit on-change on-focus validate]} ::mixins/form} state
+  (let [{{:keys [fields data errors on-submit on-change on-focus validate pristine? has-errors?]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
         server-errors (rum/react (citrus/subscription r [:article :errors]))
-        has-errors? (->> errors
-                         vals
-                         (apply concat)
-                         (every? nil?)
-                         not)
-        disabled? (or has-errors? (->> fields vals (map :touched?) (every? nil?)))]
+        disabled? (or has-errors? pristine?)]
     [:form {:on-submit (when-not has-errors?
                          (comp on-submit (fn [] [token]) with-prevent-default))}
      (when server-errors
