@@ -9,15 +9,14 @@
             [conduit.components.base :refer [Icon]]))
 
 (rum/defc Banner
-  [{:keys [loading? title author createdAt favoritesCount slug]}
-   user
-   {:keys [on-follow
-           on-unfollow
-           following?
-           on-favorite
-           on-unfavorite
-           favorited?]}]
-  (let [{:keys [username image]} author
+  [article user actions]
+  (let [{:keys [loading? title author createdAt favoritesCount slug favorited?]} article
+        {:keys [username image]} author
+        {:keys [on-follow
+                on-unfollow
+                following?
+                on-favorite
+                on-unfavorite]} actions
         author-is-user? (= (:username author) (:username user))]
     [:div.banner
      (if loading?
