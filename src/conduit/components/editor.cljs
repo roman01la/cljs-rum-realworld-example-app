@@ -1,6 +1,6 @@
 (ns conduit.components.editor
   (:require [rum.core :as rum]
-            [conduit.components.forms :refer [ArticleForm]]))
+            [conduit.components.forms.article :refer [ArticleForm]]))
 
 (rum/defc Editor [r route params]
   [:.editor-page
