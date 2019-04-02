@@ -46,7 +46,7 @@
                           (fn [{[r] :rum/args :as state}]
                             (citrus/dispatch! r :article :init)
                             state)}
-  [state r _ _]
+  [state r _ _ _]
   (let [{{:keys [fields data errors on-submit on-change on-focus validate pristine? has-errors?]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
         server-errors (rum/react (citrus/subscription r [:article :errors]))
