@@ -13,9 +13,9 @@
 
 (defmethod control :load [_ [{:keys [id]}] _]
   {:state initial-state
-   :http {:endpoint :comments
-          :slug id
-          :on-load :load-ready}})
+   :http  {:endpoint :comments
+           :slug     id
+           :on-load  :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [comments]}]]
   {:state comments})

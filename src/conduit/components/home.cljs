@@ -46,7 +46,8 @@
        (base/Button
          {:icon     :heart
           :class    "pull-xs-right"
-          :on-click (if favorited on-unfavorite on-favorite)}
+          :on-click (if favorited on-unfavorite on-favorite)
+          :outline? (not favorited)}
          favoritesCount))
      [:main
       [:a.preview-link {:href (str "#/article/" slug)}
@@ -103,7 +104,6 @@
   [:div.home-page
    (Banner)
    (Page r data)])
-
 
 (rum/defc -Home < rum/static
   [r route page {:keys [articles loading? pages-count]} tags id]

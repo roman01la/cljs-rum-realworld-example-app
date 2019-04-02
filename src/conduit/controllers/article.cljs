@@ -32,17 +32,17 @@
                        :method   :post})]
     {:state (assoc state :loading? true)
      :http  (into http-params
-                  {:params   {:article {:title title
+                  {:params   {:article {:title       title
                                         :description description
-                                        :body body
-                                        :tagList tagList}}
+                                        :body        body
+                                        :tagList     tagList}}
                    :token    token
                    :on-load  :save-success
                    :on-error :save-error})}))
 
 (defmethod control :save-success [_ [{article :article}] state]
-  {:state    (assoc state :article  article
-                          :errors   nil
+  {:state    (assoc state :article article
+                          :errors nil
                           :loading? false)
    :redirect (str "article/" (:slug article))})
 

@@ -28,21 +28,24 @@
         errors (atom errors-init)
         fields-init (->> fields
                          (reduce-kv
-                          (fn [m k v]
-                            (assoc m k (-> v
-                                           (#(if (contains? % :container)
-                                               (assoc % :container ((:container %) data errors k)) %))
-                                           (#(if (contains? % :events)
-                                               (assoc % :events
-                                                      (into {} (for [[evt-name evt-fn] (:events %)]
-                                                                 {evt-name (evt-fn data errors k)}))) %)))))
-                          {}))
-        fields (atom fields-init)]
+                           (fn [m k v]
+                             (assoc m k (-> v
+                                            (#(if (contains? % :container)
+                                                (assoc % :container ((:container %) data errors k)) %))
+                                            (#(if (contains? % :events)
+                                                (assoc % :events
+                                                         (into {} (for [[evt-name evt-fn] (:events %)]
+                                                                    {evt-name (evt-fn data errors k)}))) %)))))
+                           {}))
+        fields (atom fields-init)
+        has-errors? (->> @errors vals (apply concat) (every? nil?) not)
+        pristine? (->> @fields vals (map :touched?) (every? nil?))]
     {:will-mount
      (fn [{[r _ _ current-values] :rum/args
-           comp :rum/react-component
-           :as state}]
-       (when current-values (reset! data (into {} (for [[k v] @data] {k (get current-values k)}))))
+           comp                   :rum/react-component
+           :as                    state}]
+       (when current-values (reset! data (into {} (for [[k v] @data] {k (or (get current-values k)
+                                                                            v)}))))
        (add-watch data ::form-data (fn [_ _ old-state next-state]
                                      (when-not (= old-state next-state)
                                        (rum/request-render comp))))
@@ -62,12 +65,14 @@
      (fn [render-fn]
        (fn [{[r] :rum/args :as state}]
          (let [state
-               (assoc state ::form {:fields @fields
-                                    :validators validators
-                                    :validate #(swap! errors assoc %1 (check-errors (get validators %1) %2))
-                                    :on-change #(swap! data assoc %1 %2)
-                                    :on-submit #(on-submit r @data @errors validators %)
-                                    :on-focus #(swap! fields assoc-in [% :touched?] true)
-                                    :data @data
-                                    :errors @errors})]
+               (assoc state ::form {:fields      @fields
+                                    :validators  validators
+                                    :validate    #(swap! errors assoc %1 (check-errors (get validators %1) %2))
+                                    :on-change   #(swap! data assoc %1 %2)
+                                    :on-submit   #(on-submit r @data @errors validators %)
+                                    :on-focus    #(swap! fields assoc-in [% :touched?] true)
+                                    :data        @data
+                                    :errors      @errors
+                                    :has-errors? has-errors?
+                                    :pristine    pristine?})]
            (render-fn state))))}))
