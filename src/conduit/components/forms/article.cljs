@@ -19,6 +19,15 @@
                          (conj (vec tagList) tag) tagList)
               key ""))))
 
+(defn- handleSubmit [reconciler data errors validators [token id]]
+  (let [{:keys [title description body tagList]} data]
+    (citrus/dispatch! reconciler :article :save
+                      {:title       title
+                       :description description
+                       :body        body
+                       :tagList     tagList}
+                      token)))
+
 (def article-form
   {:fields     {:title       {:placeholder "Article Title"}
                 :description {:placeholder "What's this article about?"}
@@ -28,15 +37,7 @@
                               :events      {:on-key-down handleKeyDown}}}
    :validators {:title [[#(not (empty? %)) "Please enter title"]]
                 :body  [[#(not (empty? %)) "Please enter body"]]}
-   :on-submit
-               (fn [reconciler data errors validators [token id]]
-                 (let [{:keys [title description body tagList]} data]
-                   (citrus/dispatch! reconciler :article :save
-                                     {:title       title
-                                      :description description
-                                      :body        body
-                                      :tagList     tagList}
-                                     token)))})
+   :on-submit  handleSubmit})
 
 (rum/defcs ArticleForm < rum/reactive
                          (mixins/form article-form)
