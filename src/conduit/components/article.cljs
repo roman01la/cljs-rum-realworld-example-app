@@ -92,7 +92,7 @@
       {:article  [:load {:id id}]
        :comments [:load {:id id}]}))
   [r route params]
-  (let [article (rum/react (citrus/subscription r [:article]))
+  (let [article (rum/react (citrus/subscription r [:article :article]))
         comments (rum/react (citrus/subscription r [:comments]))
         token (rum/react (citrus/subscription r [:user :token]))
         {id :slug favorited? :favorited} article

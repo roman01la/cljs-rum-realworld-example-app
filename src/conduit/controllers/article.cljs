@@ -20,7 +20,8 @@
            :on-load  :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [article]}]]
-  {:state article})
+  {:state {:article  article
+           :loading? false}})
 
 (defmethod control :update [_ [id transform data] state]
   {:state (merge state (transform data))})
