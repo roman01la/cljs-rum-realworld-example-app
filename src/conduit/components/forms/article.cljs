@@ -9,22 +9,23 @@
                                               TagInputFieldContainer
                                               with-prevent-default]]))
 
+(defn- handleKeyDown [data errors key]
+  #(when (= 13 (.-keyCode %))
+     (.preventDefault %)
+     (let [tagList (or (:tagList @data) [])
+           tag (clojure.string/trim (key @data))]
+       (swap! data assoc
+              :tagList (if (and (not (empty? tag)) (= -1 (.indexOf tagList tag)))
+                         (conj (vec tagList) tag) tagList)
+              key ""))))
+
 (def article-form
   {:fields     {:title       {:placeholder "Article Title"}
                 :description {:placeholder "What's this article about?"}
                 :body        {:placeholder "Write your article (in markdown)"}
                 :tag         {:placeholder "Enter tags"
                               :container   TagInputFieldContainer
-                              :events      {:on-key-down
-                                            (fn [data errors key]
-                                              #(when (= 13 (.-keyCode %))
-                                                 (.preventDefault %)
-                                                 (let [tagList (or (:tagList @data) [])
-                                                       tag (clojure.string/trim (key @data))]
-                                                   (swap! data assoc
-                                                          :tagList (if (and (not (empty? tag)) (= -1 (.indexOf tagList tag)))
-                                                                     (conj (vec tagList) tag) tagList)
-                                                          key ""))))}}}
+                              :events      {:on-key-down handleKeyDown}}}
    :validators {:title [[#(not (empty? %)) "Please enter title"]]
                 :body  [[#(not (empty? %)) "Please enter body"]]}
    :on-submit
