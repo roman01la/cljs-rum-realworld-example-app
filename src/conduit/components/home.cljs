@@ -36,19 +36,13 @@
   [r {:keys [author createdAt favoritesCount title description slug tagList favorited]}]
   (let [{:keys [image username]} author
         token (rum/react (citrus/subscription r [:user :token]))
-        ;; TODO here we have parameter slug, in controllers we have id in :favorite and :unforite
-        ;; TODO wtf is tag-articles?
-        ;; TODO it looks like we are trying to update tag-articles, why?
         on-favorite #(citrus/dispatch! r :articles :favorite slug token {:dispatch [:tag-articles :update slug :article]})
         on-unfavorite #(citrus/dispatch! r :articles :unfavorite slug token {:dispatch [:tag-articles :update slug :article]})]
     [:div.article-preview
-     ;; TODO console error -> Each child in an array or iterator should have a unique "key" prop.
-     ;; TODO -> Check the render method of `ArticleMeta`. It was passed a child from ArticlePreview
      (base/ArticleMeta
        {:username  username
         :createdAt createdAt
         :image     image}
-       ;; TODO like button does something strange: redirecting to another page
        (base/Button
          {:icon     :heart
           :class    "pull-xs-right"
@@ -60,7 +54,6 @@
        [:h1 title]
        [:p description]]]
      [:div.article-footer
-      ;; TODO why urls are hardcoded?
       [:a.preview-link {:href (str "#/article/" slug)}
        [:span "Read more..."]]
       (base/Tags tagList)]]))
@@ -80,10 +73,8 @@
 (rum/defc PageItem [page route current-page slug]
   (let [path (apply bidi/path-for (into [routes route] (when slug [:id slug])))]
     [:li.page-item
-     ;; TODO refactor this sausage :)
      (when (= (if (not= js/isNaN current-page) current-page 1) page)
        {:class "active"})
-     ;; TODO do something with links
      [:a.page-link {:href (str "#" (if (= "/" path) "" path) "/page/" page)}
       page]]))
 
@@ -114,7 +105,6 @@
    (Banner)
    (Page r data)])
 
-;; TODO how to enable adequate tooling? cljs-devtools
 (rum/defc -Home < rum/static
   [r route page {:keys [articles loading? pages-count]} tags id]
   (Layout r {:articles articles
@@ -137,7 +127,6 @@
                            :icon    "ion-pound"
                            :active? true})]}))
 
-;; TODO: do smth with naming: articles = articles + meta in Home, articles = articles in -Home
 (rum/defc Home <
   rum/reactive
   (mixins/dispatch-on-mount

@@ -36,7 +36,6 @@
 ;; initialize controllers
 (defonce init-ctrl (citrus/broadcast-sync! reconciler :init))
 
-;; TODO why not to use simple `do`?
 (router/start! (fn [route]
                  (doall
                    [(citrus/dispatch! reconciler :router :push route)

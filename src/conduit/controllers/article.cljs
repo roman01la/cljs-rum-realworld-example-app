@@ -11,7 +11,6 @@
 (defmethod control :init []
   {:state initial-state})
 
-;; TODO: really strange, how :on-load works exactly?
 (defmethod control :load [_ [{:keys [id]}]]
   {:state {:loading? true}
    :http  {:endpoint :article
@@ -47,6 +46,5 @@
                           :loading? false)
    :redirect (str "article/" (:slug article))})
 
-;; TODO change loading status
 (defmethod control :save-error [_ [{errors :errors}] state]
   {:state (assoc state :errors errors)})
