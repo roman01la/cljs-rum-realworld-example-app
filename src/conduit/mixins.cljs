@@ -74,5 +74,5 @@
                                     :data        @data
                                     :errors      @errors
                                     :has-errors? has-errors?
-                                    :pristine    pristine?})]
+                                    :pristine?   pristine?})]
            (render-fn state))))}))
