@@ -27,7 +27,8 @@
                        :description description
                        :body        body
                        :tagList     tagList}
-                      token)))
+                      token
+                      id)))
 
 (def article-form
   {:fields     {:title       {:placeholder "Article Title"}
@@ -48,14 +49,14 @@
                           (fn [{[r] :rum/args :as state}]
                             (citrus/dispatch! r :article :init)
                             state)}
-  [state r _ _ _]
+  [state r _ _ article-to-update]
   (let [{{:keys [fields data errors on-submit on-change on-focus validate pristine? has-errors?]} ::mixins/form} state
         token (rum/react (citrus/subscription r [:user :token]))
         server-errors (rum/react (citrus/subscription r [:article :errors]))
         loading? (rum/react (citrus/subscription r [:article :loading?]))
         disabled? (or has-errors? pristine? loading?)]
     [:form {:on-submit (when-not has-errors?
-                         (comp on-submit (fn [] [token]) with-prevent-default))}
+                         (comp on-submit (fn [] [token (get article-to-update :slug)]) with-prevent-default))}
      (when server-errors
        (ServerErrors server-errors))
      (for [[key {:keys [placeholder type container events]}] fields]
