@@ -48,8 +48,6 @@
                                                                     {evt-name (evt-fn data errors k)}))) %)))))
                            {}))
         fields (atom fields-init)
-        has-errors? (->> @errors vals (apply concat) (every? nil?) not)
-        pristine? (->> @fields vals (map :touched?) (every? nil?))
         foreign-data (atom {})]
     {:will-mount
      (fn [{[r _ _ current-values] :rum/args
@@ -90,7 +88,9 @@
      :wrap-render
      (fn [render-fn]
        (fn [{[r] :rum/args :as state}]
-         (let [state
+         (let [has-errors? (->> @errors vals (apply concat) (every? nil?) not)
+               pristine? (->> @fields remove-hidden-fields vals (map :touched?) (every? nil?))
+               state
                (assoc state ::form {:fields      (remove-hidden-fields @fields)
                                     :validators  validators
                                     :validate    #(swap! errors assoc %1 (check-errors (get validators %1) %2))
