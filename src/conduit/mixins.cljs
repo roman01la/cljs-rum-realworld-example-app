@@ -15,14 +15,24 @@
          (apply citrus/dispatch! (into [r ctrl] event-vector))))
      state)})
 
-
 (defn- check-errors [validators value]
   (->> validators
        (filter (fn [[validator]] (-> value validator not)))
        (map second)))
 
+(defn- remove-hidden-fields [fields]
+  (reduce-kv
+    (fn [m k v]
+      (if-not (contains? v :hidden)
+        (assoc m k v)
+        m))
+    {}
+    fields))
+
 (defn form [{:keys [fields validators on-submit]}]
-  (let [data-init (->> fields keys (reduce #(assoc %1 %2 "") {}))
+  (let [data-init (->> fields keys (reduce
+                                     #(assoc %1 %2 (get-in fields [%2 :initial-value] ""))
+                                     {}))
         errors-init (->> fields keys (reduce #(assoc %1 %2 nil) {}))
         data (atom data-init)
         errors (atom errors-init)
@@ -38,20 +48,34 @@
                                                                     {evt-name (evt-fn data errors k)}))) %)))))
                            {}))
         fields (atom fields-init)
-        has-errors? (->> @errors vals (apply concat) (every? nil?) not)
-        pristine? (->> @fields vals (map :touched?) (every? nil?))]
+        foreign-data (atom {})]
     {:will-mount
      (fn [{[r _ _ current-values] :rum/args
            comp                   :rum/react-component
            :as                    state}]
-       (when current-values (reset! data (into {} (for [[k v] @data] {k (or (get current-values k)
-                                                                            v)}))))
+       (when current-values
+         (do
+           (reset! data (into {} (for [[k v] @data] {k (or (get current-values k)
+                                                           v)})))
+           (reset! foreign-data current-values)))
        (add-watch data ::form-data (fn [_ _ old-state next-state]
                                      (when-not (= old-state next-state)
                                        (rum/request-render comp))))
        (add-watch errors ::form-errors (fn [_ _ old-state next-state]
                                          (when-not (= old-state next-state)
                                            (rum/request-render comp))))
+       (add-watch fields ::form-fields (fn [_ _ old-state next-state]
+                                         (when-not (= old-state next-state)
+                                           (rum/request-render comp))))
+       state)
+     :will-update
+     (fn [{[_ _ _ current-values] :rum/args
+           :as                    state}]
+       (when (and current-values (not= current-values @foreign-data))
+         (do
+           (reset! data (into {}
+                              (for [[k v] @data] {k (or (get current-values k) v)})))
+           (reset! foreign-data current-values)))
        state)
      :will-unmount
      (fn [state]
@@ -64,8 +88,10 @@
      :wrap-render
      (fn [render-fn]
        (fn [{[r] :rum/args :as state}]
-         (let [state
-               (assoc state ::form {:fields      @fields
+         (let [has-errors? (->> @errors vals (apply concat) (every? nil?) not)
+               pristine? (->> @fields remove-hidden-fields vals (map :touched?) (every? nil?))
+               state
+               (assoc state ::form {:fields      (remove-hidden-fields @fields)
                                     :validators  validators
                                     :validate    #(swap! errors assoc %1 (check-errors (get validators %1) %2))
                                     :on-change   #(swap! data assoc %1 %2)
@@ -74,5 +100,5 @@
                                     :data        @data
                                     :errors      @errors
                                     :has-errors? has-errors?
-                                    :pristine    pristine?})]
+                                    :pristine?   pristine?})]
            (render-fn state))))}))

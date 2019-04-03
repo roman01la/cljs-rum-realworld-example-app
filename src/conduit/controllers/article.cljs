@@ -1,7 +1,9 @@
 (ns conduit.controllers.article)
 
 (def initial-state
-  {:loading? false})
+  {:loading? false
+   :article  nil
+   :errors   nil})
 
 (defmulti control (fn [event] event))
 
@@ -18,7 +20,8 @@
            :on-load  :load-ready}})
 
 (defmethod control :load-ready [_ [{:keys [article]}]]
-  {:state article})
+  {:state {:article  article
+           :loading? false}})
 
 (defmethod control :update [_ [id transform data] state]
   {:state (merge state (transform data))})
@@ -47,4 +50,5 @@
    :redirect (str "article/" (:slug article))})
 
 (defmethod control :save-error [_ [{errors :errors}] state]
-  {:state (assoc state :errors errors)})
+  {:state (assoc state :errors errors
+                       :loading? false)})

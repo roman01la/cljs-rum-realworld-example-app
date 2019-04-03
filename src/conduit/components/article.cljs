@@ -5,17 +5,19 @@
             [conduit.components.base :as base]
             [conduit.components.grid :as grid]
             [conduit.mixins :as mixins]
-            [conduit.components.comment :as comment]))
+            [conduit.components.comment :as comment]
+            [conduit.components.base :refer [Icon]]))
 
 (rum/defc Banner
-  [{:keys [loading? title author createdAt favoritesCount]}
-   {:keys [on-follow
-           on-unfollow
-           following?
-           on-favorite
-           on-unfavorite
-           favorited?]}]
-  (let [{:keys [username image]} author]
+  [article user actions]
+  (let [{:keys [loading? title author createdAt favoritesCount slug favorited?]} article
+        {:keys [username image]} author
+        {:keys [on-follow
+                on-unfollow
+                following?
+                on-favorite
+                on-unfavorite]} actions
+        author-is-user? (= (:username author) (:username user))]
     [:div.banner
      (if loading?
        [:div.container
@@ -26,13 +28,18 @@
           {:username  username
            :createdAt createdAt
            :image     image}
-          (base/Button
-            {:icon     :plus-round
-             :type     :secondary
-             :on-click (if following? on-unfollow on-follow)}
-            (if following?
-              (str "Unfollow " username " ")
-              (str "Follow " username " ")))
+          (if author-is-user?
+            [:a.btn.btn-outline-secondary.btn-sm
+             {:href (str "#/editor/" slug)}
+             (Icon "edit")
+             " Edit Article"]
+            (base/Button
+              {:icon     :plus-round
+               :type     :secondary
+               :on-click (if following? on-unfollow on-follow)}
+              (if following?
+                (str "Unfollow " username " ")
+                (str "Follow " username " "))))
           [:span "  "]
           (base/Button
             {:icon     :heart
@@ -82,7 +89,7 @@
    (grid/Row
      (grid/Column
        "col-xs-12 col-md-8 offset-md-2"
-       (comment/Form)
+       (comment/Form r)
        (map comment/Comment comments)))])
 
 (rum/defc Article <
@@ -92,9 +99,10 @@
       {:article  [:load {:id id}]
        :comments [:load {:id id}]}))
   [r route params]
-  (let [article (rum/react (citrus/subscription r [:article]))
+  (let [article (rum/react (citrus/subscription r [:article :article]))
         comments (rum/react (citrus/subscription r [:comments]))
         token (rum/react (citrus/subscription r [:user :token]))
+        user (rum/react (citrus/subscription r [:user :current-user]))
         {id :slug favorited? :favorited} article
         {user-id :username following? :following} (:author article)
         profile->author (fn [p] {:author (:profile p)})
@@ -109,5 +117,5 @@
                  :on-unfavorite on-unfavorite
                  :favorited?    favorited?}]
     [:div.article-page
-     (Banner article actions)
+     (Banner article user actions)
      (Page r article comments actions)]))
