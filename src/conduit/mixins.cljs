@@ -49,13 +49,17 @@
                            {}))
         fields (atom fields-init)
         has-errors? (->> @errors vals (apply concat) (every? nil?) not)
-        pristine? (->> @fields vals (map :touched?) (every? nil?))]
+        pristine? (->> @fields vals (map :touched?) (every? nil?))
+        foreign-data (atom {})]
     {:will-mount
      (fn [{[r _ _ current-values] :rum/args
            comp                   :rum/react-component
            :as                    state}]
-       (when current-values (reset! data (into {} (for [[k v] @data] {k (or (get current-values k)
-                                                                            v)}))))
+       (when current-values
+         (do
+           (reset! data (into {} (for [[k v] @data] {k (or (get current-values k)
+                                                           v)})))
+           (reset! foreign-data current-values)))
        (add-watch data ::form-data (fn [_ _ old-state next-state]
                                      (when-not (= old-state next-state)
                                        (rum/request-render comp))))
@@ -66,9 +70,11 @@
      :will-update
      (fn [{[_ _ _ current-values] :rum/args
            :as                    state}]
-       (when current-values
-         (reset! data (into {}
-                            (for [[k v] @data] {k (or (get current-values k) v)}))))
+       (when (and current-values (not= current-values @foreign-data))
+         (do
+           (reset! data (into {}
+                              (for [[k v] @data] {k (or (get current-values k) v)})))
+           (reset! foreign-data current-values)))
        state)
      :will-unmount
      (fn [state]
