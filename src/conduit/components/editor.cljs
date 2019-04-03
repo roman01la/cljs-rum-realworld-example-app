@@ -7,8 +7,9 @@
 (rum/defc Editor < rum/reactive
                    (mixins/dispatch-on-mount
                      (fn [_ _ params]
-                       (when params
-                         {:article [:load {:id (params :slug)}]})))
+                       (if params
+                         {:article [:load {:id (params :slug)}]}
+                         {:article [:init]})))
   [r route params]
   (let [article (rum/react (citrus/subscription r [:article :article]))]
     [:.editor-page
