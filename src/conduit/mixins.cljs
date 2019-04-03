@@ -66,6 +66,9 @@
        (add-watch errors ::form-errors (fn [_ _ old-state next-state]
                                          (when-not (= old-state next-state)
                                            (rum/request-render comp))))
+       (add-watch fields ::form-fields (fn [_ _ old-state next-state]
+                                         (when-not (= old-state next-state)
+                                           (rum/request-render comp))))
        state)
      :will-update
      (fn [{[_ _ _ current-values] :rum/args
