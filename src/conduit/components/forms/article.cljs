@@ -35,7 +35,9 @@
                 :body        {:placeholder "Write your article (in markdown)"}
                 :tag         {:placeholder "Enter tags"
                               :container   TagInputFieldContainer
-                              :events      {:on-key-down handleKeyDown}}}
+                              :events      {:on-key-down handleKeyDown}}
+                :tagList     {:hidden        true
+                              :initial-value []}}
    :validators {:title [[form-helper/present? "Please enter title"]]
                 :body  [[form-helper/present? "Please enter body"]]}
    :on-submit  handleSubmit})

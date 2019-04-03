@@ -15,14 +15,24 @@
          (apply citrus/dispatch! (into [r ctrl] event-vector))))
      state)})
 
-
 (defn- check-errors [validators value]
   (->> validators
        (filter (fn [[validator]] (-> value validator not)))
        (map second)))
 
+(defn- remove-hidden-fields [fields]
+  (reduce-kv
+    (fn [m k v]
+      (if-not (contains? v :hidden)
+        (assoc m k v)
+        m))
+    {}
+    fields))
+
 (defn form [{:keys [fields validators on-submit]}]
-  (let [data-init (->> fields keys (reduce #(assoc %1 %2 "") {}))
+  (let [data-init (->> fields keys (reduce
+                                     #(assoc %1 %2 (get-in fields [%2 :initial-value] ""))
+                                     {}))
         errors-init (->> fields keys (reduce #(assoc %1 %2 nil) {}))
         data (atom data-init)
         errors (atom errors-init)
@@ -72,7 +82,7 @@
      (fn [render-fn]
        (fn [{[r] :rum/args :as state}]
          (let [state
-               (assoc state ::form {:fields      @fields
+               (assoc state ::form {:fields      (remove-hidden-fields @fields)
                                     :validators  validators
                                     :validate    #(swap! errors assoc %1 (check-errors (get validators %1) %2))
                                     :on-change   #(swap! data assoc %1 %2)
