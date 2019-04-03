@@ -53,6 +53,13 @@
                                          (when-not (= old-state next-state)
                                            (rum/request-render comp))))
        state)
+     :will-update
+     (fn [{[_ _ _ current-values] :rum/args
+           :as                    state}]
+       (when current-values
+         (reset! data (into {}
+                            (for [[k v] @data] {k (or (get current-values k) v)}))))
+       state)
      :will-unmount
      (fn [state]
        (remove-watch data ::form-data)
