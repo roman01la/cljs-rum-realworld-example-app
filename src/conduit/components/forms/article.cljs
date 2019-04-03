@@ -10,7 +10,7 @@
                                               with-prevent-default]]
             [conduit.helpers.form :as form-helper]))
 
-(defn- handleKeyDown [data errors key]
+(defn- handle-keydown [data errors key]
   #(when (= 13 (.-keyCode %))
      (.preventDefault %)
      (let [tagList (or (:tagList @data) [])
@@ -20,7 +20,7 @@
                          (conj (vec tagList) tag) tagList)
               key ""))))
 
-(defn- handleSubmit [reconciler data errors validators [token id]]
+(defn- handle-submit [reconciler data errors validators [token id]]
   (let [{:keys [title description body tagList]} data]
     (citrus/dispatch! reconciler :article :save
                       {:title       title
@@ -35,12 +35,12 @@
                 :body        {:placeholder "Write your article (in markdown)"}
                 :tag         {:placeholder "Enter tags"
                               :container   TagInputFieldContainer
-                              :events      {:on-key-down handleKeyDown}}
+                              :events      {:on-key-down handle-keydown}}
                 :tagList     {:hidden        true
                               :initial-value []}}
    :validators {:title [[form-helper/present? "Please enter title"]]
                 :body  [[form-helper/present? "Please enter body"]]}
-   :on-submit  handleSubmit})
+   :on-submit  handle-submit})
 
 (rum/defcs ArticleForm < rum/reactive
                          (mixins/form article-form)
