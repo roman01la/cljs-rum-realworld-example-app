@@ -33,8 +33,9 @@
     (map #(rum/with-key (FeedToggleItem %) (:label %)) tabs)]])
 
 (rum/defc ArticlePreview < rum/reactive
-  [r {:keys [author createdAt favoritesCount title description slug tagList favorited]}]
-  (let [{:keys [image username]} author
+  [r article]
+  (let [{:keys [author createdAt favoritesCount title description slug tagList favorited]} article
+        {:keys [image username]} author
         token (rum/react (citrus/subscription r [:user :token]))
         on-favorite #(citrus/dispatch! r :articles :favorite slug token {:dispatch [:tag-articles :update slug :article]})
         on-unfavorite #(citrus/dispatch! r :articles :unfavorite slug token {:dispatch [:tag-articles :update slug :article]})]
