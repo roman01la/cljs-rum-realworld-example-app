@@ -37,8 +37,15 @@
   (let [{:keys [author createdAt favoritesCount title description slug tagList favorited]} article
         {:keys [image username]} author
         token (rum/react (citrus/subscription r [:user :token]))
-        on-favorite #(citrus/dispatch! r :articles :favorite slug token {:dispatch [:tag-articles :update slug :article]})
-        on-unfavorite #(citrus/dispatch! r :articles :unfavorite slug token {:dispatch [:tag-articles :update slug :article]})]
+        {route :handler} (rum/react (citrus/subscription r [:router]))
+        [on-favorite-success-handler
+         on-unfavorite-success-handler] (if (= route :tag)
+                                          [{:dispatch [:tag-articles :update slug :article]}
+                                           {:dispatch [:tag-articles :update slug :article]}]
+                                          [{:dispatch [:articles :update slug :article]}
+                                           {:dispatch [:articles :update slug :article]}])
+        on-favorite #(citrus/dispatch! r :articles :favorite slug token on-favorite-success-handler)
+        on-unfavorite #(citrus/dispatch! r :articles :unfavorite slug token on-unfavorite-success-handler)]
     [:div.article-preview
      (base/ArticleMeta
        {:username  username
