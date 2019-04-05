@@ -101,7 +101,7 @@
        :comments [:load {:id id}]}))
   [r route params]
   (let [article (rum/react (citrus/subscription r [:article :article]))
-        comments (rum/react (citrus/subscription r [:comments]))
+        comments (rum/react (citrus/subscription r [:comments :comments]))
         token (rum/react (citrus/subscription r [:user :token]))
         user (rum/react (citrus/subscription r [:user :current-user]))
         {id :slug favorited? :favorited} article
