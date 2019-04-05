@@ -6,7 +6,8 @@
             [conduit.components.grid :as grid]
             [conduit.mixins :as mixins]
             [conduit.components.comment :as comment]
-            [conduit.components.base :refer [Icon]]))
+            [conduit.components.base :refer [Icon]]
+            [conduit.components.forms.comment :refer [CommentForm]]))
 
 (rum/defc Banner
   [article user actions]
@@ -89,7 +90,7 @@
    (grid/Row
      (grid/Column
        "col-xs-12 col-md-8 offset-md-2"
-       (comment/Form r)
+       (CommentForm r)
        (map comment/Comment comments)))])
 
 (rum/defc Article <
