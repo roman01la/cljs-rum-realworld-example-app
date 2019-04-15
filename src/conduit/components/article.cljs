@@ -91,7 +91,7 @@
      (grid/Column
        "col-xs-12 col-md-8 offset-md-2"
        (CommentForm r)
-       (map comment/Comment comments)))])
+       (map #(comment/Comment r %) comments)))])
 
 (rum/defc Article <
   rum/reactive
