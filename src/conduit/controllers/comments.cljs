@@ -35,6 +35,18 @@
               (assoc :loading false)
               (update :comments #(conj % comment)))})
 
+(defmethod control :delete-comment [_ [article-id comment-id token] state]
+  {:state (-> state
+              (update :comments (fn [comments] (filter #(not= (:id %) comment-id) comments))))
+   :http  {
+           :endpoint :comment
+           :slug     [article-id comment-id]
+           :method   :delete
+           :token    token
+           :on-load  :load-ready
+           :on-error :save-error}})
+
+
 (defmethod control :load-ready [_ [{:keys [comments]}] state]
   {:state (assoc state :comments comments)})
 
