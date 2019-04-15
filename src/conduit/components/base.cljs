@@ -1,8 +1,12 @@
 (ns conduit.components.base
   (:require [rum.core :as rum]))
 
-(rum/defc Icon [icon]
-  [:i {:class (str "ion-" (name icon))}])
+(rum/defc Icon
+  ([icon] (Icon {} icon))
+  ([{:keys [on-click]} icon]
+   [:i {:on-click on-click
+        :class    (str "ion-" (name icon))}]))
+
 
 (defn- btn-class [class type size outline?]
   (str
