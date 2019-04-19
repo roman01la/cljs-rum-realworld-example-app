@@ -31,9 +31,10 @@
 
 (defmethod control :add-comment [_ [{:keys [comment]}] state]
   (.log js/console comment state)
-  {:state (-> state
-              (assoc :loading false)
-              (update :comments #(conj % comment)))})
+  {:state    (-> state
+                 (assoc :loading false)
+                 (update :comments #(conj % comment)))
+   :dispatch {:form [:reset]}})
 
 (defmethod control :delete-comment [_ [article-id comment-id token] state]
   {:state (-> state
