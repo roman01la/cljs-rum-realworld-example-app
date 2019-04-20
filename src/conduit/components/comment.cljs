@@ -15,12 +15,13 @@
       (base/Button "Post Comment")]]))
 
 (rum/defc Options < rum/reactive [r comment]
-  (let [token (rum/react (citrus/subscription r [:user :token]))
+  (let [user (rum/react (citrus/subscription r [:user]))
+        author-username (get-in comment [:author :username])
         {params :route-params} (rum/react (citrus/subscription r [:router]))
-        {:keys [id]} comment
-        delete #(citrus/dispatch! r :comments :delete-comment (:id params) id token)]
-    [:div.mod-options
-     (base/Icon {:on-click delete} :trash-a)]))
+        delete #(citrus/dispatch! r :comments :delete-comment (:id params) (comment :id) (user :token))]
+    (when (= author-username (get-in user [:current-user :username]))
+      [:div.mod-options
+       (base/Icon {:on-click delete} :trash-a)])))
 
 (rum/defc Comment [r {:keys [body author createdAt] :as comment}]
   (let [{:keys [username image]} author]
