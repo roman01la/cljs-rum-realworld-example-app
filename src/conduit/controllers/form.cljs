@@ -2,6 +2,7 @@
 
 (def initial-state
   {:init-data   nil
+   :init-fields nil
    :data        nil
    :errors      nil
    :fields      nil
@@ -24,38 +25,75 @@
          #(assoc %1 %2 (get-in fields-description [%2 :initial-value] ""))
          {})))
 
-(defn fields-description->form-init-errors [fields-description]
-  (->> fields-description
-       keys
-       (reduce #(assoc %1 %2 nil) {})))
-
 (defn check-errors [validators value]
   (->> validators
        (filter (fn [[validator]] (-> value validator not)))
        (map second)))
+
+(defn get-field-errors [form name value]
+  (let [{:keys [validators]} form
+        field-validators (get validators name)]
+    (check-errors field-validators value)))
+
+;; form updaters
+
+(defn update-has-errors? [form]
+  (->> (form :errors)
+       vals (apply concat) (every? nil?) not
+       (assoc form :has-errors?)))
+
+(defn init-errors [form]
+  (->> (form :fields)
+       keys
+       (reduce #(assoc %1 %2 nil) {})
+       (assoc form :errors)))
+
+(defn update-pristine? [form]
+  (->> (form :data)
+       (reduce-kv
+         (fn [res k _]
+           (and res (= (get-in form [:data k])
+                       (get-in form [:init-data k]))))
+         true)
+       (assoc form :pristine?)))
+
+(defn reset [form]
+  (-> form
+      (assoc :data (form :init-data))
+      (assoc :fields (form :init-fields))
+      init-errors
+      update-has-errors?
+      (assoc :pristine? false)
+      update-pristine?))
+
+;; -------------------------
 
 (defmethod control :init-form [_ [form-description] state]
   (let [{:keys [fields validators]} form-description
         init-data (fields-description->form-init-data fields)]
     {:state (-> state
                 (assoc :init-data init-data)
+                (assoc :init-fields fields)
                 (assoc :data init-data)
-                (assoc :errors (fields-description->form-init-errors fields))
                 (assoc :fields fields)
-                (assoc :validators validators))}))
+                (assoc :validators validators)
+                init-errors
+                update-has-errors?)}))
 
 (defmethod control :validate [_ [name] state]
-  (let [{:keys [validators data]} state
-        field-validators (get validators name)
-        field-value (get data name)
-        field-errors (check-errors field-validators field-value)]
-    {:state (assoc-in state [:errors name] field-errors)}))
+  {:state (-> state
+              (assoc-in [:errors name] (get-field-errors state name (get-in state [:data name])))
+              update-has-errors?)})
 
 (defmethod control :change [_ [name value] state]
-  {:state (assoc-in state [:data name] value)})
+  {:state (-> state
+              (assoc-in [:data name] value)
+              (assoc-in [:errors name] (get-field-errors state name value))
+              update-has-errors?
+              update-pristine?)})
 
 (defmethod control :focus [_ [name] state]
   {:state (assoc-in state [:fields name :touched?] true)})
 
 (defmethod control :reset [_ _ state]
-  {:state (assoc state :data (state :init-data))})
+  {:state (reset state)})
