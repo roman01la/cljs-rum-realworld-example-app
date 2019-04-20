@@ -1,9 +1,10 @@
 (ns conduit.controllers.comments)
 
 (def initial-state
-  {:error    nil
-   :comments []
-   :loading? false})
+  {:error              nil
+   :comments           []
+   :loading?           false
+   :comments-candidate nil})
 
 (defmulti control (fn [event] event))
 
@@ -31,24 +32,28 @@
 
 (defmethod control :add-comment [_ [{:keys [comment]}] state]
   {:state    (-> state
-                 (assoc :loading false)
+                 (assoc :loading? false)
                  (update :comments #(conj % comment)))
    :dispatch {:form [:reset]}})
 
 (defmethod control :delete-comment [_ [article-id comment-id token] state]
-  {:state (-> state
-              (update :comments (fn [comments] (filter #(not= (:id %) comment-id) comments))))
+  {:state (assoc state :comments-candidate (filter #(not= (:id %) comment-id) (state :comments))
+                       :loading? true)
    :http  {
            :endpoint :comment
            :slug     [article-id comment-id]
            :method   :delete
            :token    token
-           :on-load  :load-ready
+           :on-load  :use-comments-candidate
            :on-error :save-error}})
-
 
 (defmethod control :load-ready [_ [{:keys [comments]}] state]
   {:state (assoc state :comments comments
+                       :loading? false)})
+
+(defmethod control :use-comments-candidate [_ _ state]
+  {:state (assoc state :comments (state :comments-candidate)
+                       :comments-candidate nil
                        :loading? false)})
 
 (defmethod control :save-error [_ [{errors :errors}] state]
