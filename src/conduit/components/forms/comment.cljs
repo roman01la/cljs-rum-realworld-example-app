@@ -8,8 +8,6 @@
   {:fields     {:comment {:placeholder "Write a comment"}}
    :validators {:comment [[form-helper/present? "Please enter a comment"]]}})
 
-;; TODO fix comment deletion
-
 (rum/defcs CommentForm < rum/reactive
                          {:did-mount
                           (fn [{[r] :rum/args :as state}]
