@@ -20,7 +20,6 @@
         {:keys [id]} comment
         delete #(citrus/dispatch! r :comments :delete-comment (:id params) id token)]
     [:div.mod-options
-     (base/Icon :edit)
      (base/Icon {:on-click delete} :trash-a)]))
 
 (rum/defc Comment [r {:keys [body author createdAt] :as comment}]
