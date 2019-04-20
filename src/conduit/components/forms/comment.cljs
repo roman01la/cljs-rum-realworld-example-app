@@ -8,10 +8,9 @@
   {:fields     {:comment {:placeholder "Write a comment"}}
    :validators {:comment [[form-helper/present? "Please enter a comment"]]}})
 
-;; TODO validate on change
-;; TODO mark button as disabled
 ;; TODO put handle-submit inside, don't execute it if errors
 ;; TODO connect placeholder
+;; TODO fix comment deletion
 
 (rum/defcs CommentForm < rum/reactive
                          {:did-mount
@@ -21,8 +20,10 @@
   [state r]
   (let [{avatar-url :image token :token} (rum/react (citrus/subscription r [:user :current-user]))
         {params :route-params} (rum/react (citrus/subscription r [:router]))
+        comments (rum/react (citrus/subscription r [:comments]))
         form (rum/react (citrus/subscription r [:form]))
-        _ (js/console.log form)
+        disabled? (or (form :has-errors?) (form :pristine?) (comments :loading?))
+        _ (js/console.log "form" form)
         handle-submit (fn [e]
                         (.preventDefault e)
                         (citrus/dispatch! r :comments :create
@@ -41,4 +42,4 @@
         :on-focus    #(citrus/dispatch! r :form :focus :comment)}]]
      [:div.card-footer
       [:img.comment-author-img {:src avatar-url}]
-      (base/Button "Post Comment")]]))
+      (base/Button {:disabled? disabled?} "Post Comment")]]))

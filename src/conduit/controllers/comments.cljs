@@ -30,7 +30,6 @@
            :on-load  :load-ready}})
 
 (defmethod control :add-comment [_ [{:keys [comment]}] state]
-  (.log js/console comment state)
   {:state    (-> state
                  (assoc :loading false)
                  (update :comments #(conj % comment)))
@@ -49,7 +48,8 @@
 
 
 (defmethod control :load-ready [_ [{:keys [comments]}] state]
-  {:state (assoc state :comments comments)})
+  {:state (assoc state :comments comments
+                       :loading? false)})
 
 (defmethod control :save-error [_ [{errors :errors}] state]
   {:state (assoc state :errors errors
