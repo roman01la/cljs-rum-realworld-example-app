@@ -8,8 +8,6 @@
   {:fields     {:comment {:placeholder "Write a comment"}}
    :validators {:comment [[form-helper/present? "Please enter a comment"]]}})
 
-;; TODO put handle-submit inside, don't execute it if errors
-;; TODO connect placeholder
 ;; TODO fix comment deletion
 
 (rum/defcs CommentForm < rum/reactive
@@ -23,7 +21,7 @@
         comments (rum/react (citrus/subscription r [:comments]))
         form (rum/react (citrus/subscription r [:form]))
         disabled? (or (form :has-errors?) (form :pristine?) (comments :loading?))
-        _ (js/console.log "form" form)
+        placeholder (get-in form [:fields :comment :placeholder])
         handle-submit (fn [e]
                         (.preventDefault e)
                         (citrus/dispatch! r :comments :create
@@ -34,7 +32,7 @@
      {:on-submit handle-submit}
      [:div.card-block
       [:textarea.form-control
-       {:placeholder "Write a comment..."
+       {:placeholder placeholder
         :rows        3
         :value       (get-in form [:data :comment])
         :on-change   #(->> % .-target .-value (citrus/dispatch! r :form :change :comment))
