@@ -2,17 +2,17 @@
   (:require [rum.core :as rum]
             [citrus.core :as citrus]
             [conduit.components.base :as base]
-            [conduit.helpers.form :as form-helper]))
+            [conduit.helpers.form :as form-helper]
+            [conduit.mixins :as mixins]))
 
 (def comment-form
   {:fields     {:comment {:placeholder "Write a comment"}}
    :validators {:comment [[form-helper/present? "Please enter a comment"]]}})
 
 (rum/defcs CommentForm < rum/reactive
-                         {:did-mount
-                          (fn [{[r] :rum/args :as state}]
-                            (citrus/dispatch! r :form :init-form comment-form)
-                            state)}
+                         (mixins/dispatch-on-mount
+                              (fn []
+                                {:form [:init-form]}))
   [state r]
   (let [{avatar-url :image token :token} (rum/react (citrus/subscription r [:user :current-user]))
         {params :route-params} (rum/react (citrus/subscription r [:router]))
