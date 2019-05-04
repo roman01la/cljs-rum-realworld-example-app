@@ -18,7 +18,7 @@
         {params :route-params} (rum/react (citrus/subscription r [:router]))
         comments (rum/react (citrus/subscription r [:comments]))
         form (rum/react (citrus/subscription r [:form]))
-        disabled? (or (form :has-errors?) (form :pristine?) (comments :loading?))
+        disabled? (or (:has-errors? form) (:pristine? form) (:loading? comments))
         placeholder (get-in form [:fields :comment :placeholder])
         handle-submit (fn [e]
                         (.preventDefault e)

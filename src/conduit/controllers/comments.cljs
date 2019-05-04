@@ -37,7 +37,7 @@
    :dispatch {:form [:reset]}})
 
 (defmethod control :delete-comment [_ [article-id comment-id token] state]
-  {:state (assoc state :comments-candidate (remove #(= (:id %) comment-id) (state :comments))
+  {:state (assoc state :comments-candidate (remove #(= (:id %) comment-id) (:comments state))
                        :loading? true)
    :http  {
            :endpoint :comment
@@ -52,7 +52,7 @@
                        :loading? false)})
 
 (defmethod control :use-comments-candidate [_ _ state]
-  {:state (assoc state :comments (state :comments-candidate)
+  {:state (assoc state :comments (:comments-candidate state)
                        :comments-candidate nil
                        :loading? false)})
 

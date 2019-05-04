@@ -43,7 +43,7 @@
        (assoc form :has-errors?)))
 
 (defn init-errors [form]
-  (->> (form :fields)
+  (->> (:fields form)
        keys
        (reduce #(assoc %1 %2 nil) {})
        (assoc form :errors)))
@@ -59,8 +59,8 @@
 
 (defn reset [form]
   (-> form
-      (assoc :data (form :init-data))
-      (assoc :fields (form :init-fields))
+      (assoc :data (:init-data form))
+      (assoc :fields (:init-fields form))
       init-errors
       update-has-errors?
       (assoc :pristine? false)

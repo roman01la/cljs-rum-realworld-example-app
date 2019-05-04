@@ -18,7 +18,7 @@
   (let [user (rum/react (citrus/subscription r [:user]))
         author-username (get-in comment [:author :username])
         {params :route-params} (rum/react (citrus/subscription r [:router]))
-        handle-delete #(citrus/dispatch! r :comments :delete-comment (:id params) (comment :id) (user :token))]
+        handle-delete #(citrus/dispatch! r :comments :delete-comment (:id params) (:id comment) (:token user))]
     (when (= author-username (get-in user [:current-user :username]))
       [:div.mod-options
        (base/Icon {:on-click handle-delete} :trash-a)])))
