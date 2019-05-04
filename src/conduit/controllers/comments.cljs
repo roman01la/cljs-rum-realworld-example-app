@@ -33,11 +33,11 @@
 (defmethod control :add-comment [_ [{:keys [comment]}] state]
   {:state    (-> state
                  (assoc :loading? false)
-                 (update :comments #(conj % comment)))
+                 (update :comments conj comment))
    :dispatch {:form [:reset]}})
 
 (defmethod control :delete-comment [_ [article-id comment-id token] state]
-  {:state (assoc state :comments-candidate (filter #(not= (:id %) comment-id) (state :comments))
+  {:state (assoc state :comments-candidate (remove #(= (:id %) comment-id) (state :comments))
                        :loading? true)
    :http  {
            :endpoint :comment
