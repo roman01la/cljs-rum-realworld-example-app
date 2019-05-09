@@ -6,7 +6,8 @@
             [conduit.components.grid :as grid]
             [conduit.mixins :as mixins]
             [conduit.components.comment :as comment]
-            [conduit.components.base :refer [Icon]]))
+            [conduit.components.base :refer [Icon]]
+            [conduit.components.forms.comment :refer [CommentForm]]))
 
 (rum/defc Banner
   [article user actions]
@@ -89,8 +90,8 @@
    (grid/Row
      (grid/Column
        "col-xs-12 col-md-8 offset-md-2"
-       (comment/Form r)
-       (map comment/Comment comments)))])
+       (CommentForm r)
+       (map #(comment/Comment r %) comments)))])
 
 (rum/defc Article <
   rum/reactive
@@ -100,7 +101,7 @@
        :comments [:load {:id id}]}))
   [r route params]
   (let [article (rum/react (citrus/subscription r [:article :article]))
-        comments (rum/react (citrus/subscription r [:comments]))
+        comments (rum/react (citrus/subscription r [:comments :comments]))
         token (rum/react (citrus/subscription r [:user :token]))
         user (rum/react (citrus/subscription r [:user :current-user]))
         {id :slug favorited? :favorited} article

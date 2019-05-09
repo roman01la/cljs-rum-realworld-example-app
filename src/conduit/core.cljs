@@ -13,6 +13,7 @@
             [conduit.controllers.router :as router-controller]
             [conduit.controllers.user :as user]
             [conduit.controllers.profile :as profile]
+            [conduit.controllers.form :as form]
             [conduit.components.root :refer [Root]]
             [conduit.components.article :refer [Article]]))
 
@@ -27,7 +28,8 @@
                               :comments     comments/control
                               :router       router-controller/control
                               :user         user/control
-                              :profile      profile/control}
+                              :profile      profile/control
+                              :form         form/control}
             :effect-handlers {:http          effects/http
                               :local-storage effects/local-storage
                               :redirect      effects/redirect

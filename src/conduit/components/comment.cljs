@@ -14,12 +14,16 @@
       [:img.comment-author-img {:src avatar-url}]
       (base/Button "Post Comment")]]))
 
-(rum/defc Options []
-  [:div.mod-options
-   (base/Icon :edit)
-   (base/Icon :trash-a)])
+(rum/defc Options < rum/reactive [r comment]
+  (let [user (rum/react (citrus/subscription r [:user]))
+        author-username (get-in comment [:author :username])
+        {params :route-params} (rum/react (citrus/subscription r [:router]))
+        handle-delete #(citrus/dispatch! r :comments :delete-comment (:id params) (:id comment) (:token user))]
+    (when (= author-username (get-in user [:current-user :username]))
+      [:div.mod-options
+       (base/Icon {:on-click handle-delete} :trash-a)])))
 
-(rum/defc Comment [{:keys [body author createdAt]}]
+(rum/defc Comment [r {:keys [body author createdAt] :as comment}]
   (let [{:keys [username image]} author]
     [:div.card
      [:div.card-block
@@ -32,4 +36,4 @@
        username]
       [:span.date-posted
        (-> createdAt js/Date. .toDateString)]
-      (Options)]]))
+      (Options r comment)]]))
